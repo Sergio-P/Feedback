@@ -1,0 +1,79 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+
+html{
+    height: 100%;
+}
+
+body{
+    font-family: Helvetica, Verdana, sans-serif;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    background-color: #e0e0e0;
+}
+
+a{
+    cursor: pointer;
+    color: #000;
+}
+
+hr{
+    margin: 0;
+}
+
+.main-container{
+    margin: 0 auto;
+    height: 100vh;
+    overflow: hidden;
+    display: block;
+    width: 100%;
+}
+
+.top-bar{
+    background: #43a253;
+    height: 40px;
+    padding: 2px;
+}
+
+.abs-full-height{
+    position: absolute;
+    top: 40px;
+    bottom: 0;
+    width: 100%;
+}
+
+
+.full-height{
+    height: 100%;
+}
+
+.mid-height{
+    height: 50%;
+}
+
+.bordered{
+    border: 1px solid #555555;
+}
+
+.simple-padding{
+    padding: 4px;
+}
+
+.feed-box{
+    display: block;
+    width: 100%;
+    min-height: 60px;
+    border: 1px solid #999999;
+    padding: 4px;
+    margin-bottom: -1px;
+    background-color: #eeeeee;
+}
+
+.angular-google-map{
+    width: 300px;
+    height: 200px;
+    display: block;
+}
