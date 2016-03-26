@@ -5,7 +5,10 @@ var restpg = require("./rest-pg.js");
 //var http = require('http');
 
 var app = module.exports = express();
+<<<<<<< HEAD
 var conString = require("./passwords.js")("conString");
+=======
+>>>>>>> 5ea765798538631ff09485739a670fef18b5c03e
 
 var port = 8502;
 
