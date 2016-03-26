@@ -5,7 +5,7 @@ var restpg = require("./rest-pg.js");
 //var http = require('http');
 
 var app = module.exports = express();
-var conString = "tcp://sergio:qweasd@localhost/revisor";
+var conString = require("./passwords.js")("conString");
 
 var port = 8502;
 
