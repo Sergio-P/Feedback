@@ -46,7 +46,7 @@ hr{
 }
 
 .top-bar{
-    background: #43a253;
+    background: #349746;
     height: 40px;
     padding: 2px;
 }
@@ -72,7 +72,11 @@ hr{
 }
 
 .simple-padding{
-    padding: 4px;
+    padding: 5px;
+}
+
+.no-padding-right{
+    padding-right: 0;
 }
 
 .feed-box{
@@ -105,4 +109,14 @@ hr{
     width: 100%;
     height: 100%;
     background: #f4f4f4;
+}
+
+#map{
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.gray{
+    color: #999999;
 }

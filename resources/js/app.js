@@ -1,4 +1,4 @@
-var app = angular.module("Feedback",[]);
+var app = angular.module("Feedback",["ui.bootstrap"]);
 
 app.controller("FeedbackController",function($scope){
     var self = $scope;
@@ -21,7 +21,10 @@ app.controller("FeedbackController",function($scope){
         }
     ];
 
-    self.map = { center: { latitude: -33, longitude: -77 }, zoom: 8 };
+});
+
+app.controller("GraphController", function($scope){
+    var self = $scope;
 
     self.init = function(){
         //Example
@@ -76,7 +79,21 @@ app.controller("FeedbackController",function($scope){
                 }
             }
         };
-        var network = new vis.Network(container, data, options);
+        self.network = new vis.Network(container, data, options);
+    };
+
+    self.init();
+});
+
+app.controller("MapController",function($scope,$timeout){
+    var self = $scope;
+    self.mapProp = { center: {lat: -33, lng: -70 }, zoom: 8 };
+
+    self.init = function(){
+        self.map = new google.maps.Map($("#map")[0],{
+            center: new google.maps.LatLng(-33, -70),
+            zoom: 8
+        });
     };
 
     self.init();

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/vis.min.css"/>
     <link rel="stylesheet" href="css/main.css"/>
     <script src="libs/jquery.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=drawing,places,geometry"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <script src="libs/vis.min.js"></script>
     <script src="libs/angular.min.js"></script>
     <script src="libs/ui-bootstrap-tpls-1.1.2.min.js"></script>
@@ -30,12 +30,20 @@
             </div>
         </div>
         <div class="col-xs-3">
-            <a class="btn btn-default btn-sm pull-right"><i class="fa fa-sign-out"></i> Log out</a>
+            <span uib-dropdown class="pull-right">
+              <a class="btn btn-default" id="simple-dropdown" uib-dropdown-toggle>
+                  <i class="fa fa-bars"></i>
+              </a>
+              <ul uib-dropdown-menu role="menu" aria-labelledby="simple-dropdown">
+                  <li role="menuitem"><a href="#">Change Session</a></li>
+                  <li role="menuitem"><a href="#">Log out</a></li>
+              </ul>
+            </span>
         </div>
     </div>
 
     <div class="row abs-full-height">
-        <div class="col-sm-4 full-height scrollable">
+        <div class="col-sm-4 full-height scrollable no-padding-right">
             <div class="simple-padding">
                 <textarea class="form-control" ng-model="newFeed.com"></textarea>
                 <div class="btn-group btn-group-justified">
@@ -48,17 +56,17 @@
                 <div class="feed-box" ng-repeat="feed in feeds">
                     <div class="row">
                         <span class="col-xs-6"><strong>{{feed.user}}</strong></span>
-                        <span class="col-xs-5 pull-right">{{feed.date}}</span>
+                        <span class="col-xs-6"><span class="pull-right gray">{{feed.date}}</span></span>
                     </div>
                     <span class="feed-text">{{feed.text}}</span>
                 </div>
             </div>
         </div>
         <div class="col-sm-8 full-height">
-            <div class="mid-height">
-                <ui-gmap-google-map center="map.center" zoom="map.zoom"></ui-gmap-google-map>
+            <div class="mid-height" ng-controller="MapController">
+                <div id="map"></div>
             </div>
-            <div class="mid-height">
+            <div class="mid-height" ng-controller="GraphController">
                 <div id="graph"></div>
             </div>
         </div>
