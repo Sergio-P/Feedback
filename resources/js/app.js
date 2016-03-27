@@ -18,6 +18,41 @@ app.controller("FeedbackController",function($scope){
             user: "Rodrigo Peñafiel",
             date: "11/10/2012 15:43",
             text: "Los wasapo"
+        },
+        {
+            user: "Rodrigo Peñafiel",
+            date: "11/10/2012 15:43",
+            text: "Los wasapo"
+        },
+        {
+            user: "Rodrigo Peñafiel",
+            date: "11/10/2012 15:43",
+            text: "Los wasapo"
+        },
+        {
+            user: "Rodrigo Peñafiel",
+            date: "11/10/2012 15:43",
+            text: "Los wasapo"
+        },
+        {
+            user: "Rodrigo Peñafiel",
+            date: "11/10/2012 15:43",
+            text: "Los wasapo"
+        },
+        {
+            user: "Rodrigo Peñafiel",
+            date: "11/10/2012 15:43",
+            text: "Los wasapo"
+        },
+        {
+            user: "Rodrigo Peñafiel",
+            date: "11/10/2012 15:43",
+            text: "Los wasapo"
+        },
+        {
+            user: "Rodrigo Peñafiel",
+            date: "11/10/2012 15:43",
+            text: "Los wasapo"
         }
     ];
 
@@ -85,7 +120,7 @@ app.controller("GraphController", function($scope){
     self.init();
 });
 
-app.controller("MapController",function($scope,$timeout){
+app.controller("MapController",function($scope){
     var self = $scope;
     self.mapProp = { center: {lat: -33, lng: -70 }, zoom: 8 };
 
@@ -93,6 +128,42 @@ app.controller("MapController",function($scope,$timeout){
         self.map = new google.maps.Map($("#map")[0],{
             center: new google.maps.LatLng(-33, -70),
             zoom: 8
+        });
+    };
+
+    self.init();
+});
+
+
+app.controller("NewFeedController", function ($scope){
+
+    var self = $scope;
+    self.hashtags = ["Alojamientos","CafesRestaurantes","Comercios","Cultura","Deportes","Educación",
+        "Entretención","Extranjeros","Familia","Finanzas","Propiedades","Religion","Salud","Seguridad",
+        "ServiciosPúblicos","Transporte","Turismo","UtilidadPública","Voluntariado"];
+
+    self.init = function(){
+        $("#new-feed-box").textcomplete([{
+                match: /\B#([\-+\w]*)$/,
+                search: function (term, callback) {
+                    callback($.map(self.hashtags, function (cat) {
+                        return cat.indexOf(term) === 0 ? cat : null;
+                    }));
+                },
+                template: function (value) {
+                    return "#"+value+" ";
+                },
+                replace: function (value) {
+                    return '#'+value+" ";
+                },
+                index: 1
+            }
+        ], {
+            onKeydown: function (e, commands) {
+                if (e.ctrlKey && e.keyCode === 74) {
+                    return commands.KEY_ENTER;
+                }
+            }
         });
     };
 

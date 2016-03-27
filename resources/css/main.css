@@ -120,3 +120,8 @@ hr{
 .gray{
     color: #999999;
 }
+
+.over-right{
+    position: absolute;
+    right: 0;
+}
