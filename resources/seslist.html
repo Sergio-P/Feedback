@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html ng-app="SesList">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedback</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/main.css"/>
+    <script src="libs/jquery.min.js"></script>
+    <script src="libs/angular.min.js"></script>
+    <script src="libs/ui-bootstrap-tpls-1.1.2.min.js"></script>
+    <script src="js/seslistapp.js"></script>
+</head>
+<body class="bg-green">
+
+<div class="container" ng-controller="SesListController">
+
+    <h2>Select a session to start</h2>
+    <hr/>
+    <button class="btn btn-success form-control">Add New Session</button>
+    <div ng-show="newsesopen">
+        <form action="newses" method="post">
+            <label>Name:</label>
+            <input type="text" class="form-control" ng-model="newses.name"/>
+            <label>Description:</label>
+            <textarea rows="3" class="form-control" ng-model="newses.descr"></textarea>
+            <br/>
+            <button class="btn btn-success form-control" type="submit">Add</button>
+        </form>
+    </div>
+    <hr/>
+    <br/>
+    <div class="list-group">
+        <a href="../?ses={{ses.id}}" class="list-group-item" ng-repeat="ses in sessions">
+            <h4 class="list-group-item-heading">{{ses.name}}</h4>
+            <p class="list-group-item-text">{{ses.descr}}</p>
+        </a>
+    </div>
+
+
+</div>
+
+</body>
+</html>

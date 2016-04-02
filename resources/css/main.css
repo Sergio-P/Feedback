@@ -125,3 +125,17 @@ hr{
     position: absolute;
     right: 0;
 }
+
+body.bg-green{
+    background: #328742;
+    height: 100%;
+}
+
+.container{
+    max-width: 800px;
+    margin: 0 auto;
+    height: 100%;
+    display: block;
+    background: #f3f3f3;
+    box-shadow: #333333 0 0 20px 8px;
+}
