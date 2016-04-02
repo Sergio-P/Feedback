@@ -3,9 +3,11 @@ create extension postgis;
 
 create table users (
     id  serial,
-    name text not null,
-    pass text,
-    mail text,
+    username text not null,
+    fullname text not null,
+    pass text not null,
+    mail text not null,
+    sex varchar(1),
     primary key (id)
 );
 

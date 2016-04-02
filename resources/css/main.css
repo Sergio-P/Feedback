@@ -139,3 +139,13 @@ body.bg-green{
     background: #f3f3f3;
     box-shadow: #333333 0 0 20px 8px;
 }
+
+.middle-box{
+    max-width: 320px;
+    display: block;
+    padding: 4px 24px 20px 24px;
+    border-bottom: 4px solid #aaaaaa;
+    background: #f3f3f3;
+    margin: 20px auto;
+    text-align: center;
+}

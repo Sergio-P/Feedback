@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>FeedBack</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/main.css"/>
+</head>
+<body class="bg-green">
+
+<div class="middle-box">
+
+    <h2>Register</h2>
+    <hr/>
+    <br/>
+    <form action="register" method="POST">
+        <label>First Name:</label>
+        <input type="text" class="form-control" name="name" required autofocus><br>
+        <label>Last Name:</label>
+        <input type="text" class="form-control" name="lastname"><br>
+        <label>Username:</label>
+        <input type="text" class="form-control" name="user" required><br>
+        <label>Email:</label>
+        <input type="email" class="form-control" name="mail" required><br>
+        <label>Gender:</label>
+        <select name="sex" class="form-control">
+            <option value="F">Female</option>
+            <option value="M">Male</option>
+        </select><br/>
+        <label>Password:</label>
+        <input type="password" class="form-control" name="pass"><br>
+
+        <button type="submit" class="btn btn-success form-control">Register</button>
+    </form>
+
+    <br><br>
+
+    <!--<small>Do have a FEN account?</small>
+    <a href="login-fen">Login with FEN</a><br>-->
+    <small>Do have an account?</small>
+    <br/>
+    <a href="login">Login</a>
+
+</div>
+
+</body>
+</html>
