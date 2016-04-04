@@ -16,7 +16,7 @@
 
     <h2>Select a session to start</h2>
     <hr/>
-    <button class="btn btn-success form-control">Add New Session</button>
+    <button class="btn btn-success form-control" ng-click="toggleOpen()">Add New Session</button>
     <div ng-show="newsesopen">
         <form action="newses" method="post">
             <label>Name:</label>
@@ -30,7 +30,7 @@
     <hr/>
     <br/>
     <div class="list-group">
-        <a href="../?ses={{ses.id}}" class="list-group-item" ng-repeat="ses in sessions">
+        <a href="./?ses={{ses.id}}" class="list-group-item" ng-repeat="ses in sessions">
             <h4 class="list-group-item-heading">{{ses.name}}</h4>
             <p class="list-group-item-text">{{ses.descr}}</p>
         </a>

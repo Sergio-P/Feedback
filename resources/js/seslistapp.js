@@ -12,4 +12,8 @@ app.controller("SesListController",function($scope){
         {id:3, name:"Ses 3", descr:"Una descripcdsaasassda"}
     ];
 
+    self.toggleOpen = function(){
+        self.newsesopen = !self.newsesopen;
+    };
+
 });

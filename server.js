@@ -21,15 +21,19 @@ app.use(session({secret: 'ssshhh', saveUninitialized: false, resave: false}));
 
 app.get("/",function(req,res){
     if(req.session.uid){
-        if(req.param.ses) req.session.ses = req.param.ses;
+        if(req.query.ses) req.session.ses = req.query.ses;
         if(req.session.ses)
             res.render("index",{ses: req.session.ses});
         else
-            res.render("seslist");
+            res.redirect("seslist");
     }
     else{
         res.redirect("login");
     }
+});
+
+app.get("/seslist",function(req,res){
+    res.render("seslist");
 });
 
 app.get("/login",function(req,res){
