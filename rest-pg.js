@@ -5,7 +5,7 @@
 var pg = require('pg');
 //var qs = require('querystring');
 
-function smartArrayConvert(params,ses,data) {
+function smartArrayConvert(params,ses,data,calc) {
     var arr = [];
     for(var i=0; i<params.sqlParams.length; i++){
         var p = params.sqlParams[i];
@@ -15,6 +15,8 @@ function smartArrayConvert(params,ses,data) {
             arr.push(p.name);
         else if(p.type=="ses")
             arr.push(ses[p.name]);
+        else if(p.type=="calc")
+            arr.push(calc[p.name]);
         else
             arr.push(data[p.name]);
     }
@@ -49,7 +51,7 @@ module.exports.execSQL = function(params){
     return function(req,res){
         var ses;
         ses = req.session;
-        res.header("Content-type","application/json");
+        //res.header("Content-type","application/json");
         if(params.sesReqData != null) {
             for(var i=0; i<params.sesReqData.length; i++){
                 if(ses[params.sesReqData[i]]===null){
@@ -59,47 +61,48 @@ module.exports.execSQL = function(params){
                 }
             }
         }
-        var postdata = "";
+        /*var postdata = "";
         req.on("data",function(chunk){
             postdata += chunk;
         });
-        req.on("end",function(){
-            var data = {};
-            if(postdata!="")
-                data = JSON.parse(postdata);
-            //console.log(data);
-            if(params.postReqData != null) {
-                for(var i=0; i<params.postReqData.length; i++){
-                    if(data[params.postReqData[i]]===null || data[params.postReqData[i]]===""){
-                        res.end('{"status":"err"}');
-                        //console.log("No data provided");
-                        return;
-                    }
+        req.on("end",function(){*/
+        var data = req.body;
+        var calc = {};
+        /*if(postdata!="")
+            data = JSON.parse(postdata);*/
+        if(params.postReqData != null) {
+            for(var i=0; i<params.postReqData.length; i++){
+                if(data[params.postReqData[i]]===null || data[params.postReqData[i]]===""){
+                    res.end('{"status":"err"}');
+                    //console.log("No data provided");
+                    return;
                 }
             }
-            var db = new pg.Client(params.dbcon);
-            db.connect();
-            var sql = "";
-            //console.log("hola");
-            if(params.onStart != null)
-                sql = params.onStart(ses,data) || params.sql;
+        }
+        var db = new pg.Client(params.dbcon);
+        db.connect();
+        var sql = "";
+        if(params.onStart != null)
+            sql = params.onStart(ses,data,calc) || params.sql;
+        else
+            sql = params.sql;
+        var qry;
+        if(params.sqlParams != null){
+            var sqlarr = smartArrayConvert(params,ses,data,calc);
+            qry = db.query(sql,sqlarr);
+        }
+        else{
+            qry = db.query(sql);
+        }
+        qry.on("end",function(){
+            if(params.onEnd != null)
+                params.onEnd(req,res);
             else
-                sql = params.sql;
-            var qry;
-            if(params.sqlParams != null){
-                var sqlarr = smartArrayConvert(params,ses,data);
-                qry = db.query(sql,sqlarr);
-            }
-            else{
-                qry = db.query(sql);
-            }
-            qry.on("end",function(){
-                if(params.onEnd != null)
-                    params.onEnd();
-                res.end('{"status":"ok"}');
-                db.end();
-            });
+                res.send('{"status":"ok"}');
+            res.end();
+            db.end();
         });
+        //});
     }
 };
 
@@ -133,53 +136,58 @@ module.exports.singleSQL = function(params){
                 }
             }
         }
-        var postdata = "";
+       /* var postdata = "";
         req.on("data",function(chunk){
             postdata += chunk;
         });
         req.on("end",function(){
             var data = {};
             if(postdata!="")
-                data = JSON.parse(postdata);
-            if(params.postReqData != null) {
-                for(var i=0; i<params.postReqData.length; i++){
-                    if(data[params.postReqData[i]]===null || data[params.postReqData[i]]===""){
-                        res.end('{"status":"err"}');
-                        //console.log("No data provided");
-                        return;
-                    }
+                data = JSON.parse(postdata);*/
+        var data = req.body;
+        var calc = {};
+        if(params.postReqData != null) {
+            for(var i=0; i<params.postReqData.length; i++){
+                if(data[params.postReqData[i]]===null || data[params.postReqData[i]]===""){
+                    res.end('{"status":"err"}');
+                    //console.log("No data provided");
+                    return;
                 }
             }
-            var db = new pg.Client(params.dbcon);
-            db.connect();
-            if(params.onStart != null)
-                params.onStart();
-            var sql = params.sql;
-            var qry;
-            if(params.sqlParams != null){
-                var sqlarr = smartArrayConvert(params,ses,data);
-                qry = db.query(sql,sqlarr);
+        }
+        var db = new pg.Client(params.dbcon);
+        db.connect();
+        if(params.onStart != null)
+            params.onStart(ses,data,calc);
+        var sql = params.sql;
+        var qry;
+        if(params.sqlParams != null){
+            var sqlarr = smartArrayConvert(params,ses,data,calc);
+            qry = db.query(sql,sqlarr);
+        }
+        else{
+            qry = db.query(sql);
+        }
+        var result = {};
+        qry.on("row",function(row){
+            if(params.onSelect!=null){
+                result = params.onSelect(row);
             }
             else{
-                qry = db.query(sql);
+                result = row;
             }
-            var result = {};
-            qry.on("row",function(row){
-                if(params.onSelect!=null){
-                    result = params.onSelect(row);
-                }
-                else{
-                    result = row;
-                }
-            });
-            qry.on("end",function(){
-                if(params.onEnd != null)
-                    params.onEnd();
-                result["status"]="ok";
-                res.end(JSON.stringify(result));
-                db.end();
-            });
         });
+        qry.on("end",function(){
+            if(params.onEnd != null)
+                params.onEnd(req,res,result);
+            else {
+                result["status"] = "ok";
+                res.end(JSON.stringify(result));
+            }
+            res.end();
+            db.end();
+        });
+        //});
     }
 };
 
@@ -213,54 +221,58 @@ module.exports.multiSQL = function(params){
                 }
             }
         }
-        var postdata = "";
+        /*var postdata = "";
         req.on("data",function(chunk){
             postdata += chunk;
         });
         req.on("end",function(){
             var data = {};
             if(postdata!="")
-                data = JSON.parse(postdata);
+                data = JSON.parse(postdata);*/
             //console.log(postdata);
             //console.log(data);
-            if(params.postReqData != null) {
-                for(var i=0; i<params.postReqData.length; i++){
-                    if(data[params.postReqData[i]]===null || data[params.postReqData[i]]===""){
-                        res.end('[]');
-                        //console.log("No data provided");
-                        return;
-                    }
+        var data = req.body;
+        var calc = {};
+        if(params.postReqData != null) {
+            for(var i=0; i<params.postReqData.length; i++){
+                if(data[params.postReqData[i]]===null || data[params.postReqData[i]]===""){
+                    res.end('[]');
+                    //console.log("No data provided");
+                    return;
                 }
             }
-            var db = new pg.Client(params.dbcon);
-            db.connect();
-            if(params.onStart != null)
-                params.onStart();
-            var sql = params.sql;
-            var qry;
-            if(params.sqlParams != null){
-                var sqlarr = smartArrayConvert(params,ses,data);
-                qry = db.query(sql,sqlarr);
+        }
+        var db = new pg.Client(params.dbcon);
+        db.connect();
+        if(params.onStart != null)
+            params.onStart(ses,data,calc);
+        var sql = params.sql;
+        var qry;
+        if(params.sqlParams != null){
+            var sqlarr = smartArrayConvert(params,ses,data,calc);
+            qry = db.query(sql,sqlarr);
+        }
+        else{
+            qry = db.query(sql);
+        }
+        var arr = [];
+        qry.on("row",function(row){
+            if(params.onRow!=null){
+                var k = params.onRow(row);
+                if(k!=null) arr.push(k);
             }
             else{
-                qry = db.query(sql);
+                arr.push(row);
             }
-            var arr = [];
-            qry.on("row",function(row){
-                if(params.onRow!=null){
-                    var k = params.onRow(row);
-                    if(k!=null) arr.push(k);
-                }
-                else{
-                    arr.push(row);
-                }
-            });
-            qry.on("end",function(){
-                if(params.onEnd != null)
-                    params.onEnd();
-                res.end(JSON.stringify(arr));
-                db.end();
-            });
         });
+        qry.on("end",function(){
+            if(params.onEnd != null)
+                params.onEnd(req,res,arr);
+            else
+                res.send(JSON.stringify(arr));
+            res.end();
+            db.end();
+        });
+        //});
     }
 };

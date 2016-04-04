@@ -1,13 +1,12 @@
-create database feedback;
 create extension postgis;
 
 create table users (
-    id  serial,
+    id serial,
     username text not null,
     fullname text not null,
     pass text not null,
     mail text not null,
-    sex varchar(1),
+    sex char(1),
     primary key (id)
 );
 
@@ -17,7 +16,7 @@ create table sessions (
     descr text,
     time timestamp with time zone,
     creator integer,
-    code varchar(6),
+    code char(6),
     primary key (id),
     foreign key(creator) references users(id)
 );
