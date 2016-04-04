@@ -7,52 +7,12 @@ app.controller("FeedbackController",function($scope){
         {
             user: "Sergio Peñafiel",
             date: "13/10/2012 9:34",
-            text: "Primer feed yeah man"
+            text: "Primer feed"
         },
         {
             user: "Sergio Peñafiel",
             date: "16/10/2012 12:13",
-            text: "Otro feed yeah man"
-        },
-        {
-            user: "Rodrigo Peñafiel",
-            date: "11/10/2012 15:43",
-            text: "Los wasapo"
-        },
-        {
-            user: "Rodrigo Peñafiel",
-            date: "11/10/2012 15:43",
-            text: "Los wasapo"
-        },
-        {
-            user: "Rodrigo Peñafiel",
-            date: "11/10/2012 15:43",
-            text: "Los wasapo"
-        },
-        {
-            user: "Rodrigo Peñafiel",
-            date: "11/10/2012 15:43",
-            text: "Los wasapo"
-        },
-        {
-            user: "Rodrigo Peñafiel",
-            date: "11/10/2012 15:43",
-            text: "Los wasapo"
-        },
-        {
-            user: "Rodrigo Peñafiel",
-            date: "11/10/2012 15:43",
-            text: "Los wasapo"
-        },
-        {
-            user: "Rodrigo Peñafiel",
-            date: "11/10/2012 15:43",
-            text: "Los wasapo"
-        },
-        {
-            user: "Rodrigo Peñafiel",
-            date: "11/10/2012 15:43",
-            text: "Los wasapo"
+            text: "Otro feed"
         }
     ];
 
