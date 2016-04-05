@@ -1,19 +1,35 @@
 var app = angular.module("SesList",["ui.bootstrap"]);
 
-app.controller("SesListController",function($scope){
+app.controller("SesListController",function($scope, $http){
 
     var self = $scope;
 
     self.newsesopen = false;
-
-    self.sessions = [
-        {id:1, name:"Ses 1", descr:"Una descripcion muy larga"},
-        {id:2, name:"Ses 2", descr:"Una descripcion muy largadssd"},
-        {id:3, name:"Ses 3", descr:"Una descripcdsaasassda"}
-    ];
+    self.sessions = [];
+    self.newses = {name: "", descr: ""};
 
     self.toggleOpen = function(){
         self.newsesopen = !self.newsesopen;
     };
+
+    self.updateList = function() {
+        $http({url: "seslist", method: "post"}).success(function (data) {
+            self.sessions = data;
+        });
+    };
+
+    self.addNewSession = function(){
+        if(self.newses.name!="" && self.newses.descr!=""){
+            $http({url: "newses", method: "post", data:self.newses}).success(function(data){
+                if(data.status == "ok"){
+                    self.updateList();
+                }
+            });
+            self.newses = {name: "", descr: ""};
+            self.newsesopen = false;
+        }
+    };
+
+    self.updateList();
 
 });

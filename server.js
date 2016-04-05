@@ -33,11 +33,19 @@ app.get("/",function(req,res){
 });
 
 app.get("/seslist",function(req,res){
-    res.render("seslist");
+    if(req.session.uid)
+        res.render("seslist");
+    else
+        res.redirect(".");
 });
 
 app.get("/login",function(req,res){
      res.render("login");
+});
+
+app.get("/logout",function(req,res){
+    req.session.uid = null;
+    res.redirect(".");
 });
 
 app.get("/register",function(req,res){
@@ -80,6 +88,21 @@ app.post("/register", rpg.execSQL({
     onEnd: function(req,res){
         res.redirect(".");
     }
+}));
+
+app.post("/seslist", rpg.multiSQL({
+    dbcon: conString,
+    sql: "select s.id, s.name, s.descr from sessions as s left outer join sesusers as su on s.id=su.sesid where s.creator = $1 or su.uid = $2",
+    sesReqData: ["uid"],
+    sqlParams: [rpg.sqlParam("ses","uid"),rpg.sqlParam("ses","uid")]
+}));
+
+app.post("/newses", rpg.execSQL({
+    dbcon: conString,
+    sql: "insert into sessions(name,descr,time,creator) values ($1,$2,now(),$3)",
+    sesReqData: ["uid"],
+    postReqData: ["name","descr"],
+    sqlParams: [rpg.sqlParam("post","name"),rpg.sqlParam("post","descr"),rpg.sqlParam("ses","uid")]
 }));
 
 if(!module.parent){
