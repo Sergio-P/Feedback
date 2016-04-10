@@ -111,10 +111,11 @@ app.post("/newses", rpg.execSQL({
     sqlParams: [rpg.sqlParam("post","name"),rpg.sqlParam("post","descr"),rpg.sqlParam("ses","uid")]
 }));
 
-app.post("/user-list", rpg.multiSQL({
+app.post("/member-list", rpg.multiSQL({
     dbcon: conString,
-    sql: "select id, username, fullname from users",
-    sesReqData: ["uid"]
+    sql: "select u.id, u.username, u.fullname from users as u inner join (select * from sesusers where sesid=$1) as su on su.uid = u.id",
+    sesReqData: ["uid","ses"],
+    sqlParams: [rpg.sqlParam("ses","ses")]
 }));
 
 app.post("/user-list-ses", rpg.multiSQL({
@@ -127,9 +128,18 @@ app.post("/user-list-ses", rpg.multiSQL({
 
 app.post("/feed-list", rpg.multiSQL({
     dbcon: conString,
-    sql: "select id, author, descr, time, geom, parentfeed from feeds where sesid=$1",
+    sql: "select id, author, descr, time, geom, parentfeed from feeds where sesid=$1 order by time desc",
     sesReqData: ["uid","ses"],
     sqlParams: [rpg.sqlParam("ses","ses")]
+}));
+
+app.post("/new-feed", rpg.execSQL({
+    dbcon: conString,
+    sql: "insert into feeds(author,descr,time,geom,sesid,parentfeed) values ($1,$2,now(),st_geomfromtext($3,4326),$4,$5)",
+    sesReqData: ["uid","ses"],
+    postReqData: ["com"],
+    sqlParams: [rpg.sqlParam("ses","uid"),rpg.sqlParam("post","com"),rpg.sqlParam("post","geom"),
+        rpg.sqlParam("ses","ses"),rpg.sqlParam("post","parent")]
 }));
 
 if(!module.parent){
