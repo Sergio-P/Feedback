@@ -32,7 +32,8 @@
     <hr/>
     <br/>
     <div class="list-group">
-        <a href="./?ses={{ses.id}}" class="list-group-item" ng-repeat="ses in sessions">
+        <a href="./set-session?ses={{ses.id}}" class="list-group-item" ng-repeat="ses in sessions">
+            <button class="btn btn-default pull-right" ng-click="openUsers(ses.id,$event)">Users</button>
             <h4 class="list-group-item-heading">{{ses.name}}</h4>
             <p class="list-group-item-text">{{ses.descr}}</p>
         </a>

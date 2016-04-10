@@ -21,7 +21,6 @@ app.use(session({secret: 'ssshhh', saveUninitialized: false, resave: false}));
 
 app.get("/",function(req,res){
     if(req.session.uid){
-        if(req.query.ses) req.session.ses = req.query.ses;
         if(req.session.ses)
             res.render("index",{ses: req.session.ses});
         else
@@ -90,6 +89,13 @@ app.post("/register", rpg.execSQL({
     }
 }));
 
+app.get("/set-session",function(req,res){
+    if(req.session.uid!=null && req.query.ses!=null) {
+        req.session.ses = req.query.ses;
+    }
+    res.redirect(".");
+});
+
 app.post("/seslist", rpg.multiSQL({
     dbcon: conString,
     sql: "select s.id, s.name, s.descr from sessions as s left outer join sesusers as su on s.id=su.sesid where s.creator = $1 or su.uid = $2",
@@ -103,6 +109,27 @@ app.post("/newses", rpg.execSQL({
     sesReqData: ["uid"],
     postReqData: ["name","descr"],
     sqlParams: [rpg.sqlParam("post","name"),rpg.sqlParam("post","descr"),rpg.sqlParam("ses","uid")]
+}));
+
+app.post("/user-list", rpg.multiSQL({
+    dbcon: conString,
+    sql: "select id, username, fullname from users",
+    sesReqData: ["uid"]
+}));
+
+app.post("/user-list-ses", rpg.multiSQL({
+    dbcon: conString,
+    sql: "select u.id, u.username, u.fullname, (su.sesid is not null) as member from users as u left outer join (select * from sesusers where sesid=$1) as su on su.uid = u.id",
+    sesReqData: ["uid"],
+    postReqData: ["ses"],
+    sqlParams: [rpg.sqlParam("post","ses")]
+}));
+
+app.post("/feed-list", rpg.multiSQL({
+    dbcon: conString,
+    sql: "select id, author, descr, time, geom, parentfeed from feeds where sesid=$1",
+    sesReqData: ["uid","ses"],
+    sqlParams: [rpg.sqlParam("ses","ses")]
 }));
 
 if(!module.parent){

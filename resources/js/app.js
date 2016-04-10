@@ -1,20 +1,18 @@
 var app = angular.module("Feedback",["ui.bootstrap"]);
 
-app.controller("FeedbackController",function($scope){
+app.controller("FeedbackController",function($scope,$http){
     var self = $scope;
 
-    self.feeds = [
-        {
-            user: "Sergio Peñafiel",
-            date: "13/10/2012 9:34",
-            text: "Primer feed"
-        },
-        {
-            user: "Sergio Peñafiel",
-            date: "16/10/2012 12:13",
-            text: "Otro feed"
-        }
-    ];
+    self.feeds = [];
+    self.newFeed = {com: "", files: []};
+
+    self.updateFeeds = function(){
+        $http({url: "feed-list", method: "post"}).success(function(data){
+            self.feeds = data;
+        });
+    };
+
+    self.updateFeeds();
 
 });
 

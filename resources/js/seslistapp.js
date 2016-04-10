@@ -1,6 +1,6 @@
 var app = angular.module("SesList",["ui.bootstrap"]);
 
-app.controller("SesListController",function($scope, $http){
+app.controller("SesListController",function($scope, $http, $uibModal){
 
     var self = $scope;
 
@@ -30,6 +30,43 @@ app.controller("SesListController",function($scope, $http){
         }
     };
 
+    self.openUsers = function(idx,event){
+        event.stopPropagation();
+        event.preventDefault();
+        $uibModal.open({
+            templateUrl: "templ/modal_sesusers.html",
+            controller: "SesUsersController",
+            resolve: {
+                params: function(){
+                    return {
+                        ses: idx
+                    }
+                }
+            }
+        });
+    };
+
     self.updateList();
+
+});
+
+app.controller("SesUsersController",function($scope,$http,params){
+    var self = $scope;
+    self.users = [];
+
+    console.log(params);
+
+    $http({url: "user-list-ses", method: "post", data:{ses: params.ses}}).success(function (data) {
+        self.users = data;
+        console.log(self.users);
+    });
+
+    self.selectNotMembers = function(){
+        return self.users.filter(function(e){return !e.member});
+    };
+
+    self.selectMembers = function(){
+        return self.users.filter(function(e){return e.member});
+    };
 
 });
