@@ -89,6 +89,11 @@ hr{
     background-color: #eeeeee;
 }
 
+.feed-box.highlight{
+    border: 1px solid #222222;
+    background-color: #ceffd2;
+}
+
 .angular-google-map{
     width: 300px;
     height: 200px;

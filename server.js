@@ -44,6 +44,7 @@ app.get("/login",function(req,res){
 
 app.get("/logout",function(req,res){
     req.session.uid = null;
+    req.session.ses = null;
     res.redirect(".");
 });
 
@@ -98,17 +99,22 @@ app.get("/set-session",function(req,res){
 
 app.post("/seslist", rpg.multiSQL({
     dbcon: conString,
-    sql: "select s.id, s.name, s.descr from sessions as s left outer join sesusers as su on s.id=su.sesid where s.creator = $1 or su.uid = $2",
+    sql: "select s.id, s.name, s.descr from sessions as s inner join sesusers as su on s.id=su.sesid where su.uid = $1",
     sesReqData: ["uid"],
-    sqlParams: [rpg.sqlParam("ses","uid"),rpg.sqlParam("ses","uid")]
+    sqlParams: [rpg.sqlParam("ses","uid")]
 }));
 
-app.post("/newses", rpg.execSQL({
+app.post("/newses", rpg.singleSQL({
     dbcon: conString,
-    sql: "insert into sessions(name,descr,time,creator) values ($1,$2,now(),$3)",
+    sql: "insert into sessions(name,descr,time,creator) values ($1,$2,now(),$3) returning id",
     sesReqData: ["uid"],
     postReqData: ["name","descr"],
-    sqlParams: [rpg.sqlParam("post","name"),rpg.sqlParam("post","descr"),rpg.sqlParam("ses","uid")]
+    sqlParams: [rpg.sqlParam("post","name"),rpg.sqlParam("post","descr"),rpg.sqlParam("ses","uid")],
+    onEnd: function(req,res,result){
+        var uid = req.session.uid;
+        addSesUser(uid,result.id);
+        res.send('{"status":"ok"}');
+    }
 }));
 
 app.post("/member-list", rpg.multiSQL({
@@ -141,6 +147,31 @@ app.post("/new-feed", rpg.execSQL({
     sqlParams: [rpg.sqlParam("ses","uid"),rpg.sqlParam("post","com"),rpg.sqlParam("post","geom"),
         rpg.sqlParam("ses","ses"),rpg.sqlParam("post","parent")]
 }));
+
+app.post("/add-ses-users", function(req,res){
+    if(req.session.uid==null){
+        res.end("");
+        return;
+    }
+    var users = req.body.users;
+    var sesid = req.body.sesid;
+    console.log(users);
+    console.log(sesid);
+    for(var i=0; i<users.length; i++){
+        addSesUser(users[i],sesid);
+    }
+    res.end('{"status":"ok"}');
+});
+
+function addSesUser(uid,ses){
+    var sql = "insert into sesusers(sesid,uid) values ($1,$2)";
+    var db = new pg.Client(conString);
+    db.connect();
+    var qry = db.query(sql,[ses,uid]);
+    qry.on("end",function(){
+        db.end();
+    });
+}
 
 if(!module.parent){
     app.listen(port,function(){

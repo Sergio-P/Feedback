@@ -1,11 +1,17 @@
 <div class="modal-header">
-    <h3 class="modal-title">Users in this session</h3>
+    <h3 class="modal-title">Users in "{{sesname}}" session</h3>
 </div>
 <div class="modal-body">
     <h4>Add more users:</h4>
-    <hr/>
-    <select id="modal-sesusers-select" class="form-control" ng-options="x.fullname for x in selectNotMembers()" ng-model="newMemb">
-    </select>
+    <div class="row">
+        <div class="col-xs-8">
+        <multiselect ms-header="Select Users" multiple="true" options="x.fullname for x in selectNotMembers()" ng-model="newMembs">
+        </multiselect>
+        </div>
+        <div class="col-xs-4">
+            <button class="btn btn-success pull-right" ng-click="addToSession()"><i class="fa fa-plus"></i> Add to session</button>
+        </div>
+    </div>
     <br/>
     <hr/>
     <br/>

@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <title>Feedback</title>
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
     <link rel="stylesheet" href="css/main.css"/>
     <script src="libs/jquery.min.js"></script>
     <script src="libs/angular.min.js"></script>
     <script src="libs/ui-bootstrap-tpls-1.1.2.min.js"></script>
+    <script src="libs/angular-bootstrap-multiselect.js"></script>
     <script src="js/seslistapp.js"></script>
 </head>
 <body class="bg-green">
@@ -16,14 +18,15 @@
 
     <h2>Select a session to start</h2>
     <hr/>
-    <button class="btn btn-success form-control" ng-click="toggleOpen()">Add New Session</button>
+    <button class="btn btn-success form-control" ng-click="toggleOpen()"><i class="fa fa-plus"></i> Add New Session</button>
     <br/>
     <div ng-show="newsesopen">
+        <br/>
         <div>
             <label>Name:</label>
             <input type="text" class="form-control" ng-model="newses.name"/>
             <label>Description:</label>
-            <textarea rows="3" class="form-control" ng-model="newses.descr"></textarea>
+            <textarea rows="2" class="form-control" ng-model="newses.descr"></textarea>
             <br/>
             <button class="btn btn-success form-control" ng-click="addNewSession()">Add</button>
         </div>
@@ -33,7 +36,9 @@
     <br/>
     <div class="list-group">
         <a href="./set-session?ses={{ses.id}}" class="list-group-item" ng-repeat="ses in sessions">
-            <button class="btn btn-default pull-right" ng-click="openUsers(ses.id,$event)">Users</button>
+            <button class="btn btn-default pull-right" ng-click="openUsers(ses.id,$event)">
+                <i class="fa fa-users"></i> Users
+            </button>
             <h4 class="list-group-item-heading">{{ses.name}}</h4>
             <p class="list-group-item-text">{{ses.descr}}</p>
         </a>
