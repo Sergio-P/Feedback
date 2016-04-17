@@ -62,7 +62,7 @@
                         <span class="col-xs-6"><strong>{{usersIdHash[feed.author].fullname}}</strong></span>
                         <span class="col-xs-6"><span class="pull-right gray">{{feed.time | date:'d-MM-yyyy HH:mm'}}</span></span>
                     </div>
-                    <span class="feed-text">{{feed.descr}}</span>
+                    <span class="feed-text" bind-html-compile="prettyPrintFeed(feed.descr,feed.id)"></span>
                 </div>
             </div>
         </div>
@@ -72,6 +72,7 @@
             </div>
             <div class="mid-height" ng-controller="GraphController">
                 <div id="graph"></div>
+                <a ng-click="updateNetwork()">update</a>
             </div>
         </div>
     </div>

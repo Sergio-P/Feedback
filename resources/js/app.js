@@ -2,6 +2,7 @@ var app = angular.module("Feedback",["ui.bootstrap"]);
 
 app.controller("FeedbackController",function($scope,$http){
     var self = $scope;
+    self.shared = {};
 
     self.feeds = [];
     self.hashtags = ["Alojamientos","CafesRestaurantes","Comercios","Cultura","Deportes","Educación",
@@ -9,10 +10,12 @@ app.controller("FeedbackController",function($scope,$http){
         "ServiciosPúblicos","Transporte","Turismo","UtilidadPública","Voluntariado"];
     self.users = [];
     self.usersIdHash = {};
+    self.tagMap = {};
 
     self.updateFeeds = function(){
         $http({url: "feed-list", method: "post"}).success(function(data){
             self.feeds = data;
+            self.shared.updateNetwork();
         });
     };
 
@@ -43,6 +46,39 @@ app.controller("FeedbackController",function($scope,$http){
         return parts;
     };
 
+    self.prettyPrintFeed = function(feed,id){
+        var parts = self.getPrefixedParts(feed);
+        var feedf = "";
+        var k = 0;
+        for(var i=0; i<parts.length; i++){
+            var part = parts[i];
+            feedf += feed.substring(k,part.from);
+            if(part.prefix=="#") {
+                feedf += '<a class="green" ng-click="highlightHashtag(\'' + part.text + '\')">';
+                self.addToTagMap(part.text,id);
+            }
+            else
+                feedf += '<a class="green" ng-click="openProfile(\''+part.text+'\')">';
+            feedf += part.text+"</a>";
+            k = part.to;
+        }
+        feedf += feed.substring(k);
+        return feedf;
+    };
+
+    self.addToTagMap = function(tag, fid){
+        if(tag in self.tagMap && ! self.tagMap[tag].includes(fid)){
+            self.tagMap[tag].push(fid);
+        }
+        else{
+            self.tagMap[tag] = [fid];
+        }
+    };
+
+    self.highlightHashtag = function(hashtag){
+        console.log(self.tagMap);
+    };
+
     self.updateFeeds();
     self.updateUsers();
 
@@ -51,8 +87,25 @@ app.controller("FeedbackController",function($scope,$http){
 app.controller("GraphController", function($scope){
     var self = $scope;
 
-    self.init = function(){
-        var nodes = new vis.DataSet([
+    self.updateNetwork = function(){
+
+        var nds = [];
+        var edg = [];
+
+        for(var i=0; i<self.feeds.length; i++){
+            var fd = self.feeds[i];
+            nds.push({id: fd.id, label: fd.descr.substring(0,10), group: "feed"});
+        }
+
+        for(var tag in self.tagMap){
+            var catid = nds.length*-1;
+            nds.push({id: catid, label: tag, group: "cat"});
+            for(var i=0; i<self.tagMap[tag].length; i++){
+                edg.push({from: catid, to: self.tagMap[tag][i]});
+            }
+        }
+
+        /*var nodes = new vis.DataSet([
             {id: 1, label: 'Feed1', group: "feed"},
             {id: 2, label: 'Cat 1', group: "cat"},
             {id: 3, label: 'Cat 2', group: "cat"},
@@ -74,7 +127,10 @@ app.controller("GraphController", function($scope){
             {from: 7, to: 3},
             {from: 7, to: 4},
             {from: 8, to: 3}
-        ]);
+        ]);*/
+
+        var nodes = new vis.DataSet(nds);
+        var edges = new vis.DataSet(edg);
 
         var container = $('#graph')[0];
         var data = {
@@ -91,7 +147,7 @@ app.controller("GraphController", function($scope){
             },
             edges: {
                 width: 1,
-                length: 1
+                length: 100
             },
             groups: {
                 feed: {
@@ -106,7 +162,8 @@ app.controller("GraphController", function($scope){
         self.network = new vis.Network(container, data, options);
     };
 
-    self.init();
+    self.updateNetwork();
+    self.shared.updateNetwork = self.updateNetwork;
 });
 
 app.controller("MapController",function($scope){
@@ -188,3 +245,25 @@ app.controller("NewFeedController", function ($scope, $http){
 
     self.init();
 });
+
+app.directive('bindHtmlCompile', ['$compile', function ($compile) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            scope.$watch(function () {
+                return scope.$eval(attrs.bindHtmlCompile);
+            }, function (value) {
+                // Incase value is a TrustedValueHolderType, sometimes it
+                // needs to be explicitly called into a string in order to
+                // get the HTML string.
+                element.html(value && value.toString());
+                // If scope is provided use it, otherwise use parent scope
+                var compileScope = scope;
+                if (attrs.bindHtmlScope) {
+                    compileScope = scope.$eval(attrs.bindHtmlScope);
+                }
+                $compile(element.contents())(compileScope);
+            });
+        }
+    };
+}]);

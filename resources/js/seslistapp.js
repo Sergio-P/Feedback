@@ -80,8 +80,6 @@ app.controller("SesUsersController",function($scope,$http,params){
         };
         $http({url: "add-ses-users", method: "post", data:postdata}).success(function (data){
             if(data.status=="ok") {
-                /*self.updateUsers();
-                self.newMembs = [];*/
                 self.$close();
             }
         });
