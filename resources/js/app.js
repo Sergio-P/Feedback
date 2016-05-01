@@ -15,6 +15,11 @@ app.controller("FeedbackController",function($scope,$http){
     self.updateFeeds = function(){
         $http({url: "feed-list", method: "post"}).success(function(data){
             self.feeds = data;
+            self.tagMap = {};
+            for(var i = 0; i < self.feeds.length; i++){
+                var f = self.feeds[i];
+                f.prettyText = self.prettyPrintFeed(f.descr, f.id);
+            }
             self.shared.updateNetwork();
         });
     };
@@ -105,44 +110,14 @@ app.controller("GraphController", function($scope){
             }
         }
 
-        /*var nodes = new vis.DataSet([
-            {id: 1, label: 'Feed1', group: "feed"},
-            {id: 2, label: 'Cat 1', group: "cat"},
-            {id: 3, label: 'Cat 2', group: "cat"},
-            {id: 4, label: 'Cat 3', group: "cat"},
-            {id: 5, label: 'Feed2', group: "feed"},
-            {id: 6, label: "Feed3", group: "feed"},
-            {id: 7, label: "Feed4", group: "feed"},
-            {id: 8, label: "Feed5", group: "feed"}
-        ]);
-
-        var edges = new vis.DataSet([
-            {from: 1, to: 2},
-            {from: 1, to: 3},
-            {from: 5, to: 2},
-            {from: 6, to: 2},
-            {from: 6, to: 4},
-            {from: 6, to: 3},
-            {from: 7, to: 2},
-            {from: 7, to: 3},
-            {from: 7, to: 4},
-            {from: 8, to: 3}
-        ]);*/
-
         var nodes = new vis.DataSet(nds);
         var edges = new vis.DataSet(edg);
 
         var container = $('#graph')[0];
-        var data = {
-            nodes: nodes,
-            edges: edges
-        };
+        var data = { nodes: nodes, edges: edges };
         var options = {
             nodes: {
-                font: {
-                    size: 14,
-                    color: '#000000'
-                },
+                font: { size: 14, color: '#000000'},
                 borderWidth: 2
             },
             edges: {
@@ -152,7 +127,7 @@ app.controller("GraphController", function($scope){
             groups: {
                 feed: {
                     shape: 'box',
-                    color: {background: "#32a287", border: "#007722"}
+                    color: "#32d287"
                 },
                 cat: {
                     shape: 'circle'
@@ -175,6 +150,28 @@ app.controller("MapController",function($scope){
             center: new google.maps.LatLng(-33, -70),
             zoom: 8
         });
+
+        self.drawingManager = new google.maps.drawing.DrawingManager({
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_RIGHT,
+                drawingModes: [google.maps.drawing.OverlayType.MARKER]
+            },
+            markerOptions: {
+                editable: true,
+                draggable: true
+            }
+        });
+        self.drawingManager.setMap(self.map);
+        google.maps.event.addListener(self.drawingManager,'overlaycomplete',self.overlayHandler);
+    };
+
+    self.overlayHandler = function(event){
+        if(self.shared.newMarker!=null)
+            self.shared.newMarker.setMap(null);
+        self.shared.newMarker = event.overlay;
+        self.drawingManager.setDrawingMode(null);
+        self.drawingManager.setOptions({drawingControl: false});
     };
 
     self.init();
