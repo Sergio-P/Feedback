@@ -11,6 +11,7 @@ app.controller("FeedbackController",function($scope,$http){
     self.users = [];
     self.usersIdHash = {};
     self.tagMap = {};
+    self.highlights = [];
 
     self.updateFeeds = function(){
         $http({url: "feed-list", method: "post"}).success(function(data){
@@ -21,6 +22,7 @@ app.controller("FeedbackController",function($scope,$http){
                 f.prettyText = self.prettyPrintFeed(f.descr, f.id);
             }
             self.shared.updateNetwork();
+            self.shared.updateMap();
         });
     };
 
@@ -80,8 +82,13 @@ app.controller("FeedbackController",function($scope,$http){
         }
     };
 
-    self.highlightHashtag = function(hashtag){
-        console.log(self.tagMap);
+    self.highlightHashtag = function(hashtag) {
+        self.highlights = [];
+        for (var i = 0; i < self.feeds.length; i++) {
+            if (self.feeds[i].descr.includes(hashtag)) {
+                self.highlights.push(self.feeds[i].id);
+            }
+        }
     };
 
     self.updateFeeds();
@@ -110,11 +117,11 @@ app.controller("GraphController", function($scope){
             }
         }
 
-        var nodes = new vis.DataSet(nds);
+        self.nodes = new vis.DataSet(nds);
         var edges = new vis.DataSet(edg);
 
         var container = $('#graph')[0];
-        var data = { nodes: nodes, edges: edges };
+        var data = { nodes: self.nodes, edges: edges };
         var options = {
             nodes: {
                 font: { size: 14, color: '#000000'},
@@ -134,7 +141,13 @@ app.controller("GraphController", function($scope){
                 }
             }
         };
+
         self.network = new vis.Network(container, data, options);
+        self.network.on("click",function(params){
+            if(params.nodes.length<1) return;
+            var node = params.nodes[0];
+            console.log(self.nodes.get(node));
+        });
     };
 
     self.updateNetwork();
@@ -144,6 +157,7 @@ app.controller("GraphController", function($scope){
 app.controller("MapController",function($scope){
     var self = $scope;
     self.mapProp = { center: {lat: -33, lng: -72 }, zoom: 8 };
+    self.feedsMarkers = [];
 
     self.init = function(){
         self.map = new google.maps.Map($("#map")[0],{
@@ -170,11 +184,31 @@ app.controller("MapController",function($scope){
         if(self.shared.newMarker!=null)
             self.shared.newMarker.setMap(null);
         self.shared.newMarker = event.overlay;
+        self.setMapDrawingMode(false);
+    };
+
+    self.updateMap = function(){
+        for(var i=0; i<self.feeds.length; i++){
+            var fgeom = self.feeds[i].geom;
+            if(fgeom==null) continue;
+            var mark = new google.maps.Marker({
+                map: self.map,
+                position: wktToLatLng(fgeom)
+            });
+            self.feedsMarkers.push(mark);
+        }
+    };
+
+    self.setMapDrawingMode = function(mode){
+        if(mode && self.shared.newMarker!=null)
+                self.shared.newMarker.setMap(null);
         self.drawingManager.setDrawingMode(null);
-        self.drawingManager.setOptions({drawingControl: false});
+        self.drawingMager.setOptions({drawingControl: mode});
     };
 
     self.init();
+    self.shared.updateMap = self.updateMap;
+    self.shared.setMapDrawingMode = self.setMapDrawingMode;
 });
 
 
@@ -229,12 +263,13 @@ app.controller("NewFeedController", function ($scope, $http){
             var postdata = {
                 com: self.newFeed.com,
                 parent: parentId,
-                geom: null
+                geom: (self.shared.newMarker!=null)?wkt(self.shared.newMarker):null
             };
             $http({url: "new-feed", method:"post", data:postdata}).success(function(data){
                 if(data.status == "ok") {
                     self.updateFeeds();
                     self.newFeed = {com: "", files: []};
+                    self.shared.setMapDrawingMode(true);
                 }
             });
         }
@@ -250,11 +285,7 @@ app.directive('bindHtmlCompile', ['$compile', function ($compile) {
             scope.$watch(function () {
                 return scope.$eval(attrs.bindHtmlCompile);
             }, function (value) {
-                // Incase value is a TrustedValueHolderType, sometimes it
-                // needs to be explicitly called into a string in order to
-                // get the HTML string.
                 element.html(value && value.toString());
-                // If scope is provided use it, otherwise use parent scope
                 var compileScope = scope;
                 if (attrs.bindHtmlScope) {
                     compileScope = scope.$eval(attrs.bindHtmlScope);
@@ -264,3 +295,16 @@ app.directive('bindHtmlCompile', ['$compile', function ($compile) {
         }
     };
 }]);
+
+
+// Static utils functions
+var wkt = function(goverlay){
+    if(goverlay instanceof google.maps.Marker){
+        return "POINT("+goverlay.getPosition().lng()+" "+goverlay.getPosition().lat()+")";
+    }
+};
+
+var wktToLatLng = function(a) {
+    var comps = a.substring(6,a.length-1).split(" ");
+    return new google.maps.LatLng(comps[1],comps[0]);
+};

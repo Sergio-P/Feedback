@@ -134,7 +134,7 @@ app.post("/user-list-ses", rpg.multiSQL({
 
 app.post("/feed-list", rpg.multiSQL({
     dbcon: conString,
-    sql: "select id, author, descr, time, geom, parentfeed from feeds where sesid=$1 order by time desc",
+    sql: "select id, author, descr, time, st_astext(geom) as geom, parentfeed from feeds where sesid=$1 order by time desc",
     sesReqData: ["uid","ses"],
     sqlParams: [rpg.sqlParam("ses","ses")]
 }));
