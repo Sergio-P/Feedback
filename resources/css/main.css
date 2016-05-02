@@ -162,3 +162,18 @@ a.green{
 a.green:hover{
     color: #00c523;
 }
+
+a.absolute-right {
+    position: absolute;
+    right: 68px;
+    top: 5px;
+    display: block;
+}
+a.map-btn {
+    background-color: #ffffff;
+    box-shadow: #999999 -1px 1px 4px;
+    color: #666666;
+    width: 24px;
+    height: 24px;
+    padding: 1px 6px;
+}

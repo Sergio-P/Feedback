@@ -186,7 +186,7 @@ app.controller("MapController",function($scope){
     self.init = function(){
         self.map = new google.maps.Map($("#map")[0],{
             center: new google.maps.LatLng(-33, -70),
-            zoom: 8
+            zoom: 15
         });
 
         self.drawingManager = new google.maps.drawing.DrawingManager({
@@ -231,10 +231,12 @@ app.controller("MapController",function($scope){
     };
 
     self.setMapDrawingMode = function(mode){
-        if(mode && self.shared.newMarker!=null)
-                self.shared.newMarker.setMap(null);
+        if(mode && self.shared.newMarker!=null) {
+            self.shared.newMarker.setMap(null);
+            self.shared.newMarker = null;
+        }
         self.drawingManager.setDrawingMode(null);
-        self.drawingMager.setOptions({drawingControl: mode});
+        self.drawingManager.setOptions({drawingControl: mode});
     };
 
     self.shared.highlightMarkers = function(){
@@ -248,6 +250,11 @@ app.controller("MapController",function($scope){
             }
         }
     };
+
+    navigator.geolocation.getCurrentPosition(function(pos){
+        geolocation = new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
+        self.map.setCenter(geolocation);
+    });
 
     self.init();
     self.shared.updateMap = self.updateMap;
