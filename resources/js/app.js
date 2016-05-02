@@ -61,7 +61,7 @@ app.controller("FeedbackController",function($scope,$http){
             var part = parts[i];
             feedf += feed.substring(k,part.from);
             if(part.prefix=="#") {
-                feedf += '<a class="green" ng-click="highlightHashtag(\'' + part.text + '\')">';
+                feedf += '<a class="green" ng-click="highlightHashtag(\'' + part.text + '\'); $event.stopPropagation();">';
                 self.addToTagMap(part.text,id);
             }
             else
@@ -89,6 +89,17 @@ app.controller("FeedbackController",function($scope,$http){
                 self.highlights.push(self.feeds[i].id);
             }
         }
+        self.propagateHighlight();
+    };
+
+    self.highlightUnique = function(fid){
+        self.highlights = [fid];
+        self.propagateHighlight();
+    };
+
+    self.propagateHighlight = function(){
+        self.shared.highlightNodes();
+        self.shared.highlightMarkers();
     };
 
     self.updateFeeds();
@@ -134,7 +145,10 @@ app.controller("GraphController", function($scope){
             groups: {
                 feed: {
                     shape: 'box',
-                    color: "#32d287"
+                    color: {
+                        background: "#a2c6b7", border: "#218752",
+                        highlight: {background: "#56ff8e", border: "#218752"}
+                    }
                 },
                 cat: {
                     shape: 'circle'
@@ -145,9 +159,19 @@ app.controller("GraphController", function($scope){
         self.network = new vis.Network(container, data, options);
         self.network.on("click",function(params){
             if(params.nodes.length<1) return;
-            var node = params.nodes[0];
-            console.log(self.nodes.get(node));
+            var nodeid = params.nodes[0];
+            var node = self.nodes.get(nodeid);
+            console.log(node);
+            if(node.group=="cat")
+                self.highlightHashtag(node.label);
+            else if(node.group=="feed")
+                self.highlightUnique(nodeid);
+            $scope.$apply();
         });
+    };
+
+    self.shared.highlightNodes = function(){
+        self.network.selectNodes(self.highlights);
     };
 
     self.updateNetwork();
@@ -157,7 +181,7 @@ app.controller("GraphController", function($scope){
 app.controller("MapController",function($scope){
     var self = $scope;
     self.mapProp = { center: {lat: -33, lng: -72 }, zoom: 8 };
-    self.feedsMarkers = [];
+    self.feedsMarkers = {};
 
     self.init = function(){
         self.map = new google.maps.Map($("#map")[0],{
@@ -173,7 +197,8 @@ app.controller("MapController",function($scope){
             },
             markerOptions: {
                 editable: true,
-                draggable: true
+                draggable: true,
+                icon: "gpx/mbluefx.png"
             }
         });
         self.drawingManager.setMap(self.map);
@@ -190,12 +215,18 @@ app.controller("MapController",function($scope){
     self.updateMap = function(){
         for(var i=0; i<self.feeds.length; i++){
             var fgeom = self.feeds[i].geom;
+            var fid = self.feeds[i].id;
             if(fgeom==null) continue;
             var mark = new google.maps.Marker({
                 map: self.map,
-                position: wktToLatLng(fgeom)
+                position: wktToLatLng(fgeom),
+                icon: "gpx/mredfx.png"
             });
-            self.feedsMarkers.push(mark);
+            google.maps.event.addListener(mark,"click",(function(a){return function(){
+                self.highlightUnique(a);
+                $scope.$apply();
+            }})(fid));
+            self.feedsMarkers[fid] = mark;
         }
     };
 
@@ -204,6 +235,18 @@ app.controller("MapController",function($scope){
                 self.shared.newMarker.setMap(null);
         self.drawingManager.setDrawingMode(null);
         self.drawingMager.setOptions({drawingControl: mode});
+    };
+
+    self.shared.highlightMarkers = function(){
+        for(var idx in self.feedsMarkers){
+            if(self.highlights.indexOf(parseInt(idx))!=-1){
+                console.log(1);
+                self.feedsMarkers[idx].setIcon("gpx/mgreenfx.png");
+            }
+            else{
+                self.feedsMarkers[idx].setIcon("gpx/mredfx.png");
+            }
+        }
     };
 
     self.init();
