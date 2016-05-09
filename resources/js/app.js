@@ -23,6 +23,7 @@ app.controller("FeedbackController",function($scope,$http){
             }
             self.shared.updateNetwork();
             self.shared.updateMap();
+            self.shared.updateAutocomplete();
         });
     };
 
@@ -39,15 +40,20 @@ app.controller("FeedbackController",function($scope,$http){
         var parts = [];
         var words = text.split(" ");
         var at;
+        var punct = ",.;:";
         for(var i=0; i<words.length; i++){
             var word = words[i];
             if (word[0] == "@") {
                 at = text.indexOf(word);
-                parts.push({prefix: "@", text: word.substring(0), from: at, to: at + word.length});
+                var l = word.length;
+                if(punct.indexOf(word[l-1])!=-1) l--;
+                parts.push({prefix: "@", text: word.substring(0,l), from: at, to: at + l});
             }
             else if (word[0] == "#") {
                 at = text.indexOf(word);
-                parts.push({prefix: "#", text: word.substring(0), from: at, to: at + word.length});
+                var l = word.length;
+                if(punct.indexOf(word[l-1])!=-1) l--;
+                parts.push({prefix: "#", text: word.substring(0,l), from: at, to: at + l});
             }
         }
         return parts;
@@ -79,6 +85,9 @@ app.controller("FeedbackController",function($scope,$http){
         }
         else{
             self.tagMap[tag] = [fid];
+            if(!(self.hashtags.includes(tag.substring(1)))){
+                self.hashtags.push(tag.substring(1));
+            }
         }
     };
 
@@ -268,6 +277,7 @@ app.controller("NewFeedController", function ($scope, $http){
     self.newFeed = {com: "", files: []};
 
     self.init = function(){
+        console.log(self.hashtags);
         $("#new-feed-box").textcomplete([
             {
                 match: /\B#([\-+\w]*)$/,
@@ -326,6 +336,7 @@ app.controller("NewFeedController", function ($scope, $http){
     };
 
     self.init();
+    self.shared.updateAutocomplete = self.init;
 });
 
 app.directive('bindHtmlCompile', ['$compile', function ($compile) {
