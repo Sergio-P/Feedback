@@ -347,6 +347,16 @@ app.directive('bindHtmlCompile', ['$compile', function ($compile) {
 }]);
 
 
+app.controller("SearchController", function($scope,$http){
+    var self = $scope;
+    self.simpleSearchBox = "";
+
+    self.simpleSearch = function(){
+        self.highlightHashtag(self.simpleSearchBox);
+    };
+
+});
+
 // Static utils functions
 var wkt = function(goverlay){
     if(goverlay instanceof google.maps.Marker){

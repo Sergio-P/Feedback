@@ -24,10 +24,11 @@
             <img src="gpx/logo.png" alt="LOGO" class="logo"/>
         </div>
         <div class="col-xs-6">
-            <div class="input-group">
-                <input type="text" class="form-control"/>
+            <div class="input-group" ng-controller="SearchController">
+                <input type="text" class="form-control" ng-model="simpleSearchBox"/>
                 <span class="input-group-btn">
-                    <button class="btn btn-default"><i class="fa fa-search"></i></button>
+                    <button class="btn btn-default"><i class="fa fa-sliders"></i></button>
+                    <button class="btn btn-default" ng-click="simpleSearch()"><i class="fa fa-search"></i></button>
                 </span>
             </div>
         </div>
