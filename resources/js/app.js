@@ -131,7 +131,7 @@ app.controller("GraphController", function($scope){
 
         for(var tag in self.tagMap){
             var catid = nds.length*-1;
-            nds.push({id: catid, label: tag, group: "cat"});
+            nds.push({id: catid, label: tag.substring(0,10), group: "cat"});
             for(var i=0; i<self.tagMap[tag].length; i++){
                 edg.push({from: catid, to: self.tagMap[tag][i]});
             }
@@ -149,13 +149,18 @@ app.controller("GraphController", function($scope){
             },
             edges: {
                 width: 1,
-                length: 100
+                length: 100,
+                color: {
+                    color: "#666666",
+                    highlight: "#23b569"
+                },
+                selectionWidth: 4
             },
             groups: {
                 feed: {
                     shape: 'box',
                     color: {
-                        background: "#a2c6b7", border: "#218752",
+                        background: "#c3d4cc", border: "#888888",
                         highlight: {background: "#56ff8e", border: "#218752"}
                     }
                 },
