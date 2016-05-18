@@ -5,9 +5,7 @@ app.controller("FeedbackController",function($scope,$http){
     self.shared = {};
 
     self.feeds = [];
-    self.hashtags = ["Alojamientos","CafesRestaurantes","Comercios","Cultura","Deportes","Educación",
-        "Entretención","Extranjeros","Familia","Finanzas","Propiedades","Religion","Salud","Seguridad",
-        "ServiciosPúblicos","Transporte","Turismo","UtilidadPública","Voluntariado"];
+    self.hashtags = {"Alojamientos":0,"CafesRestaurantes":0,"Comercios":0,"Cultura":0,"Deportes":0,"Educacion":0,"Entretencion":0,"Extranjeros":0,"Familia":0,"Finanzas":0,"Propiedades":0,"Religion":0,"Salud":0,"Seguridad":0,"ServiciosPublicos":0,"Transporte":0,"Turismo":0,"UtilidadPublica":0,"Voluntariado":0};
     self.users = [];
     self.usersIdHash = {};
     self.tagMap = {};
@@ -82,12 +80,11 @@ app.controller("FeedbackController",function($scope,$http){
     self.addToTagMap = function(tag, fid){
         if(tag in self.tagMap && ! self.tagMap[tag].includes(fid)){
             self.tagMap[tag].push(fid);
+            self.hashtags[tag.substring(1)]++;
         }
         else{
             self.tagMap[tag] = [fid];
-            if(!(self.hashtags.includes(tag.substring(1)))){
-                self.hashtags.push(tag.substring(1));
-            }
+            self.hashtags[tag.substring(1)] = 1;
         }
     };
 
@@ -131,7 +128,7 @@ app.controller("GraphController", function($scope){
 
         for(var tag in self.tagMap){
             var catid = nds.length*-1;
-            nds.push({id: catid, label: tag.substring(0,10), group: "cat"});
+            nds.push({id: catid, label: (tag.substring(0,10)+"\n"+self.hashtags[tag.substring(1)]), group: "cat"});
             for(var i=0; i<self.tagMap[tag].length; i++){
                 edg.push({from: catid, to: self.tagMap[tag][i]});
             }
@@ -287,7 +284,7 @@ app.controller("NewFeedController", function ($scope, $http){
             {
                 match: /\B#([\-+\w]*)$/,
                 search: function (term, callback) {
-                    callback($.map(self.hashtags, function (cat) {
+                    callback($.map(getSortedKeys(self.hashtags), function (cat) {
                         return cat.indexOf(term) === 0 ? cat : null;
                     }));
                 },
@@ -383,4 +380,11 @@ var wkt = function(goverlay){
 var wktToLatLng = function(a) {
     var comps = a.substring(6,a.length-1).split(" ");
     return new google.maps.LatLng(comps[1],comps[0]);
+};
+
+var getSortedKeys = function(obj){
+    var arr = [];
+    for(var k in obj)
+        arr.push({k:k,v:obj[k]});
+    return (arr.sort(function(a,b){return b.v- a.v;})).map(function(e){return e.k;});
 };
