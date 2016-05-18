@@ -174,7 +174,7 @@ app.controller("GraphController", function($scope){
             var node = self.nodes.get(nodeid);
             console.log(node);
             if(node.group=="cat")
-                self.highlightHashtag(node.label);
+                self.highlightHashtag(node.label.split("\n")[0]);
             else if(node.group=="feed")
                 self.highlightUnique(nodeid);
             $scope.$apply();
