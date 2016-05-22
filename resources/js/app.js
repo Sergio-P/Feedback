@@ -5,6 +5,7 @@ app.controller("FeedbackController",function($scope,$http){
     self.shared = {};
 
     self.feeds = [];
+    self.rawfeeds = [];
     self.hashtags = {"Alojamientos":0,"CafesRestaurantes":0,"Comercios":0,"Cultura":0,"Deportes":0,"Educacion":0,"Entretencion":0,"Extranjeros":0,"Familia":0,"Finanzas":0,"Propiedades":0,"Religion":0,"Salud":0,"Seguridad":0,"ServiciosPublicos":0,"Transporte":0,"Turismo":0,"UtilidadPublica":0,"Voluntariado":0};
     self.users = [];
     self.usersIdHash = {};
@@ -19,6 +20,7 @@ app.controller("FeedbackController",function($scope,$http){
                 var f = self.feeds[i];
                 f.prettyText = self.prettyPrintFeed(f.descr, f.id);
             }
+            self.rawfeeds = self.feeds;
             self.shared.updateNetwork();
             self.shared.updateMap();
             self.shared.updateAutocomplete();
@@ -312,7 +314,7 @@ app.controller("NewFeedController", function ($scope, $http){
                 index: 1
             }
         ], {
-            onKeydown: function (e, commands) {
+            onKeydown: function (e, commands){
                 if (e.ctrlKey && e.keyCode === 74) {
                     return commands.KEY_ENTER;
                 }
@@ -360,15 +362,80 @@ app.directive('bindHtmlCompile', ['$compile', function ($compile) {
 }]);
 
 
-app.controller("SearchController", function($scope,$http){
+app.controller("SearchController", function($scope){
     var self = $scope;
     self.simpleSearchBox = "";
+    self.advSearchOpen = false;
 
     self.simpleSearch = function(){
-        self.highlightHashtag(self.simpleSearchBox);
+        if(self.simpleSearchBox!="")
+            self.highlightHashtag(self.simpleSearchBox);
+    };
+
+    self.openAdvSearch = function(){
+        self.advSearchOpen = !self.advSearchOpen;
+    };
+
+    self.dismiss = function(){
+        self.advSearchOpen = false;
     };
 
 });
+
+app.controller("AdvancedSearchController", function ($scope, $http){
+    var self = $scope;
+
+    self.sdata = {
+        aggType: "and",
+        content: "",
+        dateIni: null,
+        dateEnd: null,
+        locFilt: null,
+        tagFilt: ""
+    };
+
+    self.search = function(){
+        var rdata = self.rawfeeds;
+        var s = self.sdata;
+        if(s.aggType == "and")
+            rdata = self.feeds;
+
+        var filtarr = [];
+        if(s.locFilt!=null) alert("Location filter in development");
+        for(var i=0; i<rdata.length; i++){
+            var f = rdata[i];
+            //Content filter
+            if(f.descr.toLowerCase().indexOf(s.content.toLowerCase()) == -1) continue;
+            //Time filter
+            if(s.dateIni!=null && s.dateIni > new Date(f.time)) continue;
+            if(s.dateEnd!=null && s.dateEnd < new Date(f.time)) continue;
+            //Loc filter
+            //if(s.locFilt!=null) alert("Location filter in development");
+            //Tag filter
+            if(s.tagFilt!=""){
+                var tags = s.tagFilt.replace(" ","").split(",");
+                var hastag = false;
+                for(var j=0; j<tags.length; j++){
+                    if(f.descr.indexOf(tags[j])!=-1){
+                        hastag = true;
+                        break;
+                    }
+                }
+                if(!hastag) continue;
+            }
+            //Add to filtarr
+            filtarr.push(f);
+        }
+        console.log(filtarr);
+
+        if(s.aggType=="and")
+            self.feeds = filtarr;
+        else
+            self.feeds = union(self.feeds,filtarr);
+    };
+
+});
+
 
 // Static utils functions
 var wkt = function(goverlay){
@@ -387,4 +454,15 @@ var getSortedKeys = function(obj){
     for(var k in obj)
         arr.push({k:k,v:obj[k]});
     return (arr.sort(function(a,b){return b.v- a.v;})).map(function(e){return e.k;});
+};
+
+var union = function(a,b){
+    var hash = {}, i;
+    for (i=0; i<a.length; i++){
+        hash[a[i]]=true;
+    }
+    for (i=0; i<b.length; i++){
+        hash[b[i]]=true;
+    }
+    return Object.keys(hash);
 };

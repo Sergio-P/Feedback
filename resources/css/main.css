@@ -177,3 +177,23 @@ a.map-btn {
     height: 24px;
     padding: 1px 6px;
 }
+
+.popover{
+    max-width: 600px;
+}
+
+.advsearch{
+    width: 500px;
+}
+
+.advsearch .row{
+    margin-top: 2px;
+}
+
+.ng-invalid{
+    border: 1px solid red;
+}
+
+.as-label{
+    margin-top: 4px;
+}

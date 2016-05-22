@@ -1,0 +1,54 @@
+<div class="advsearch" ng-controller="AdvancedSearchController">
+    <h4>Advanced Search</h4>
+    <hr/>
+    <br/>
+    <div class="row">
+        <div class="col-xs-3 as-label">Method:</div>
+        <div class="col-xs-9">
+            <div class="btn-group btn-group-sm btn-group-justified">
+                <a class="btn btn-default" ng-model="sdata.aggType" uib-btn-radio="'or'">Append</a>
+                <a class="btn btn-default" ng-model="sdata.aggType" uib-btn-radio="'and'">Filter</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3 as-label">Content:</div>
+        <div class="col-xs-9">
+            <input class="form-control input-sm" type="text" ng-model="sdata.content"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3 as-label">Time filter:</div>
+        <div class="col-xs-4">
+            <input class="form-control input-sm" type="text" uib-datepicker-popup="dd/M!/yyyy" ng-model="sdata.dateIni" placeholder="21/04/2016"/>
+        </div>
+        <div class="col-xs-1 as-label"> to</div>
+        <div class="col-xs-4">
+            <input class="form-control input-sm" type="text" uib-datepicker-popup="dd/M!/yyyy" ng-model="sdata.dateEnd" placeholder="17/05/2016"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3 as-label">Location filter:</div>
+        <div class="col-xs-9">
+            <div class="btn-group btn-group-sm btn-group-justified">
+                <a class="btn btn-default" ng-model="sdata.locFilt" uib-btn-radio="'map'" uncheckable>Map Visible Area</a>
+                <a class="btn btn-default" ng-model="sdata.locFilt" uib-btn-radio="'rect'" uncheckable>Custom Rectangle</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-3 as-label">Tags filter:</div>
+        <div class="col-xs-9">
+            <input type="text" class="form-control input-sm" placeholder="#Alojamientos, #Educacion, ..." ng-model="sdata.tagFilt"/>
+        </div>
+    </div>
+    <br/>
+    <hr/>
+    <br/>
+    <div class="row">
+        <div class="col-xs-4 pull-right">
+            <button class="btn btn-default" ng-click="dismiss()">Cancel</button>
+            <button class="btn btn-success" ng-click="search()">Search</button>
+        </div>
+    </div>
+</div>
