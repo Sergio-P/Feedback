@@ -457,7 +457,7 @@ app.controller("AdvancedSearchController", function ($scope, $http){
         if(s.aggType=="and")
             self.setFeeds(filtarr);
         else
-            self.setFeeds(union(self.feeds,filtarr));
+            self.setFeeds(union(self.feeds,filtarr,self.rawfeeds,function(f){return f.id;}));
         self.dismiss();
     };
 
@@ -483,13 +483,10 @@ var getSortedKeys = function(obj){
     return (arr.sort(function(a,b){return b.v- a.v;})).map(function(e){return e.k;});
 };
 
-var union = function(a,b){
-    var hash = {}, i;
-    for (i=0; i<a.length; i++){
-        hash[a[i]]=true;
-    }
-    for (i=0; i<b.length; i++){
-        hash[b[i]]=true;
-    }
-    return Object.keys(hash);
+var union = function(a,b,c,f){
+    var fa = a.map(f);
+    var fb = b.map(f);
+    console.log(fa);
+    console.log(fb);
+    return c.filter(function(e){return fa.includes(f(e)) || fb.includes(f(e));});
 };
