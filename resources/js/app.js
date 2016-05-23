@@ -291,6 +291,16 @@ app.controller("MapController",function($scope){
         }
     };
 
+    self.shared.getMapBounds = function(){
+        var bnd = self.map.getBounds();
+        return {
+            top: bnd.getNorthEast().lat(),
+            bottom: bnd.getSouthWest().lat(),
+            left: bnd.getSouthWest().lng(),
+            right: bnd.getNorthEast().lng()
+        };
+    };
+
     navigator.geolocation.getCurrentPosition(function(pos){
         geolocation = new google.maps.LatLng(pos.coords.latitude,pos.coords.longitude);
         self.map.setCenter(geolocation);
@@ -428,7 +438,7 @@ app.controller("AdvancedSearchController", function ($scope, $http){
             rdata = self.feeds;
 
         var filtarr = [];
-        if(s.locFilt!=null) alert("Location filter in development");
+        //if(s.locFilt!=null) alert("Location filter in development");
         for(var i=0; i<rdata.length; i++){
             var f = rdata[i];
             //Content filter
@@ -437,7 +447,10 @@ app.controller("AdvancedSearchController", function ($scope, $http){
             if(s.dateIni!=null && s.dateIni > new Date(f.time)) continue;
             if(s.dateEnd!=null && s.dateEnd < new Date(f.time)) continue;
             //Loc filter
-            //if(s.locFilt!=null) alert("Location filter in development");
+            if(s.locFilt=="map" && (f.geom==null || !wktInBounds(f.geom,self.shared.getMapBounds())))
+                continue;
+            //else if(s.locFilt == "rect")
+
             //Tag filter
             if(s.tagFilt!=""){
                 var tags = s.tagFilt.replace(" ","").split(",");
@@ -486,7 +499,12 @@ var getSortedKeys = function(obj){
 var union = function(a,b,c,f){
     var fa = a.map(f);
     var fb = b.map(f);
-    console.log(fa);
-    console.log(fb);
     return c.filter(function(e){return fa.includes(f(e)) || fb.includes(f(e));});
+};
+
+var wktInBounds = function(wktp,bounds){
+    var comps = wktp.substring(6, wktp.length-1).split(" ").map(function(e){return parseFloat(e);});
+    var x = comps[0];
+    var y = comps[1];
+    return bounds.left<=x && bounds.right>=x && bounds.bottom<=y && bounds.top>=y;
 };
