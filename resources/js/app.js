@@ -27,6 +27,25 @@ app.controller("FeedbackController",function($scope,$http){
         });
     };
 
+    self.setFeeds = function(arr){
+        self.highlights = [];
+        self.feeds = arr;
+        self.tagMap = {};
+        for(var i = 0; i < self.feeds.length; i++){
+            var f = self.feeds[i];
+            f.prettyText = self.prettyPrintFeed(f.descr, f.id);
+        }
+        self.shared.updateNetwork();
+        self.shared.updateMap();
+        self.shared.updateAutocomplete();
+    };
+
+    self.restoreFeeds = function(){
+        self.highlights = [];
+        if(self.feeds == self.rawfeeds) return;
+        self.setFeeds(self.rawfeeds);
+    };
+
     self.updateUsers = function(){
         $http({url: "member-list", method: "post"}).success(function(data){
             self.users = data;
@@ -226,6 +245,7 @@ app.controller("MapController",function($scope){
     };
 
     self.updateMap = function(){
+        self.removeAllMarkers();
         for(var i=0; i<self.feeds.length; i++){
             var fgeom = self.feeds[i].geom;
             var fid = self.feeds[i].id;
@@ -241,6 +261,13 @@ app.controller("MapController",function($scope){
             }})(fid));
             self.feedsMarkers[fid] = mark;
         }
+    };
+
+    self.removeAllMarkers = function(){
+        for(var id in self.feedsMarkers){
+            self.feedsMarkers[id].setMap(null);
+        }
+        self.feedsMarkers = {};
     };
 
     self.setMapDrawingMode = function(mode){
@@ -426,12 +453,12 @@ app.controller("AdvancedSearchController", function ($scope, $http){
             //Add to filtarr
             filtarr.push(f);
         }
-        console.log(filtarr);
 
         if(s.aggType=="and")
-            self.feeds = filtarr;
+            self.setFeeds(filtarr);
         else
-            self.feeds = union(self.feeds,filtarr);
+            self.setFeeds(union(self.feeds,filtarr));
+        self.dismiss();
     };
 
 });
