@@ -134,6 +134,7 @@ app.controller("FeedbackController",function($scope,$http){
 
 app.controller("GraphController", function($scope){
     var self = $scope;
+    self.detailBox = {show: true, name:"Prueba des", expandible:false, id:-1};
 
     self.updateNetwork = function(){
 
@@ -198,6 +199,10 @@ app.controller("GraphController", function($scope){
                 self.highlightUnique(nodeid);
             $scope.$apply();
         });
+    };
+
+    self.graphZoom = function(dz){
+        self.network.moveTo({scale: self.network.getScale()*dz, animation: {duration: 100, easingFunction: "easeOutQuad"}});
     };
 
     self.shared.highlightNodes = function(){

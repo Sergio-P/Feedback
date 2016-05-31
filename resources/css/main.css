@@ -63,6 +63,10 @@ hr{
     height: 100%;
 }
 
+.full-width{
+    width: 100%;
+}
+
 .mid-height{
     height: 50%;
 }
@@ -196,4 +200,28 @@ a.map-btn {
 
 .as-label{
     margin-top: 4px;
+}
+
+.graph-ov-btn{
+    background-color: #ffffff;
+    box-shadow: #999999 0 1px 4px;
+    color: #666666;
+    padding: 1px 4px;
+}
+
+.graph-descr{
+    position: absolute;
+    right: 10px;
+    top: 51%;
+    /*width: 125px;*/
+    height: 48px;
+}
+
+.graph-zoom{
+    position: absolute;
+    right: 24px;
+    bottom: 5px;
+    width: 28px;
+    height: 54px;
+    padding: 4px;
 }
