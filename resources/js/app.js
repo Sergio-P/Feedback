@@ -59,20 +59,18 @@ app.controller("FeedbackController",function($scope,$http){
         var parts = [];
         var words = text.split(" ");
         var at;
-        var punct = ",.;:";
         for(var i=0; i<words.length; i++){
             var word = words[i];
+            var wl = lematize(word);
             if (word[0] == "@") {
                 at = text.indexOf(word);
-                var l = word.length;
-                if(punct.indexOf(word[l-1])!=-1) l--;
-                parts.push({prefix: "@", text: word.substring(0,l), from: at, to: at + l});
+                var l = wl.length;
+                parts.push({prefix: "@", text: wl.substring(0,l), orgnText: word.substring(0,l), from: at, to: at + l});
             }
             else if (word[0] == "#") {
                 at = text.indexOf(word);
-                var l = word.length;
-                if(punct.indexOf(word[l-1])!=-1) l--;
-                parts.push({prefix: "#", text: word.substring(0,l), from: at, to: at + l});
+                var l = wl.length;
+                parts.push({prefix: "#", text: wl.substring(0,l), orgnText: word.substring(0,l), from: at, to: at + l});
             }
         }
         return parts;
@@ -91,7 +89,7 @@ app.controller("FeedbackController",function($scope,$http){
             }
             else
                 feedf += '<a class="green" ng-click="openProfile(\''+part.text+'\')">';
-            feedf += part.text+"</a>";
+            feedf += part.orgnText+"</a>";
             k = part.to;
         }
         feedf += feed.substring(k);
@@ -112,7 +110,7 @@ app.controller("FeedbackController",function($scope,$http){
     self.highlightHashtag = function(hashtag) {
         self.highlights = [];
         for (var i = 0; i < self.feeds.length; i++) {
-            if (self.feeds[i].descr.includes(hashtag)) {
+            if (self.feeds[i].prettyText.includes(hashtag)) {
                 self.highlights.push(self.feeds[i].id);
             }
         }
@@ -507,4 +505,20 @@ var wktInBounds = function(wktp,bounds){
     var x = comps[0];
     var y = comps[1];
     return bounds.left<=x && bounds.right>=x && bounds.bottom<=y && bounds.top>=y;
+};
+
+var lematize = function(word){
+    var w = word.toLowerCase();
+    var punct = ",.;:";
+    var tildes = {"á":"a","é":"e","í":"i","ó":"o","ú":"u"};
+    var n = w.length;
+    for(var i=0; i<punct.length; i++){
+        var k = w.indexOf(punct[i]);
+        if(k!=-1 && k<n) n=k;
+    }
+    w = w.substr(0,n);
+    w = w.replace(/[^\w ]/g, function(char){
+        return tildes[char] || char;
+    });
+    return w;
 };
