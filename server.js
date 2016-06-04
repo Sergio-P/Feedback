@@ -5,6 +5,7 @@ var pg = require('pg');
 var crypto = require('crypto');
 var rpg = require("./rest-pg.js");
 var bodyParser = require('body-parser');
+var twAdpt = require("./twitterAdapter.js");
 
 var app = module.exports = express();
 var conString = require("./passwords.js")("conString");
@@ -162,6 +163,8 @@ app.post("/add-ses-users", function(req,res){
     }
     res.end('{"status":"ok"}');
 });
+
+app.post("/twitter-feeds", twAdpt.tweetsAsFeeds);
 
 function addSesUser(uid,ses){
     var sql = "insert into sesusers(sesid,uid) values ($1,$2)";
