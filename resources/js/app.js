@@ -41,7 +41,6 @@ app.controller("FeedbackController",function($scope,$http){
     };
 
     self.restoreFeeds = function(){
-        self.highlights = [];
         if(self.feeds == self.rawfeeds) return;
         self.setFeeds(self.rawfeeds);
     };
@@ -134,7 +133,7 @@ app.controller("FeedbackController",function($scope,$http){
 
 app.controller("GraphController", function($scope){
     var self = $scope;
-    self.detailBox = {show: true, name:"Prueba des", expandible:false, id:-1};
+    self.detailBox = {show: false, expandible:false, val:-1};
 
     self.updateNetwork = function(){
 
@@ -189,14 +188,24 @@ app.controller("GraphController", function($scope){
 
         self.network = new vis.Network(container, data, options);
         self.network.on("click",function(params){
-            if(params.nodes.length<1) return;
+            if(params.nodes.length<1){
+                self.detailBox.show = false;
+                $scope.$apply();
+                return;
+            }
             var nodeid = params.nodes[0];
             var node = self.nodes.get(nodeid);
-            console.log(node);
-            if(node.group=="cat")
+            if(node.group=="cat") {
                 self.highlightHashtag(node.label.split("\n")[0]);
-            else if(node.group=="feed")
+                self.detailBox.expandible = true;
+                self.detailBox.val = node.label.split("\n")[0];
+            }
+            else if(node.group=="feed") {
                 self.highlightUnique(nodeid);
+                self.detailBox.expandible = false;
+                self.detailBox.val = nodeid;
+            }
+            self.detailBox.show = true;
             $scope.$apply();
         });
     };
@@ -205,7 +214,27 @@ app.controller("GraphController", function($scope){
         self.network.moveTo({scale: self.network.getScale()*dz, animation: {duration: 100, easingFunction: "easeOutQuad"}});
     };
 
+    self.graphCenter = function(){
+        self.network.moveTo({position: {x:0, y:0}, animation: {duration: 100, easingFunction: "easeOutQuad"}});
+    };
+
+    self.removeItem = function(){
+        var feedsr = self.feeds.filter(function(e){return e.id!=self.detailBox.val;});
+        console.log(feedsr);
+        self.setFeeds(feedsr);
+        self.detailBox.show = false;
+    };
+
+    self.appendCat = function(){
+        var feedscat = self.rawfeeds.filter(function(e){return e.descr.toLowerCase().indexOf(self.detailBox.val)!=-1;});
+        var feedsr = union(self.feeds,feedscat,self.rawfeeds,function(f){return f.id;});
+        console.log(feedsr);
+        self.setFeeds(feedsr);
+        self.detailBox.show = false;
+    };
+
     self.shared.highlightNodes = function(){
+        self.detailBox.show = false;
         self.network.selectNodes(self.highlights);
     };
 

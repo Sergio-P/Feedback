@@ -207,14 +207,16 @@ a.map-btn {
     box-shadow: #999999 0 1px 4px;
     color: #666666;
     padding: 1px 4px;
+    border-radius: 4px;
 }
 
 .graph-descr{
     position: absolute;
-    right: 10px;
+    right: 24px;
     top: 51%;
-    /*width: 125px;*/
-    height: 48px;
+    width: 28px;
+    padding: 4px;
+    height: 28px;
 }
 
 .graph-zoom{
@@ -222,6 +224,6 @@ a.map-btn {
     right: 24px;
     bottom: 5px;
     width: 28px;
-    height: 54px;
+    height: 74px;
     padding: 4px;
 }

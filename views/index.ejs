@@ -82,11 +82,12 @@
             <div class="mid-height" ng-controller="GraphController">
                 <div id="graph"></div>
                 <div class="graph-ov-btn graph-descr" ng-show="detailBox.show">
-                    <span ng-bind="detailBox.name"></span><br/>
-                    <a class="btn btn-default btn-xs full-width" ng-show="detailBox.expandible">Expand</a>
-                    <a class="btn btn-default btn-xs full-width" ng-show="!detailBox.expandible">Remove</a>
+                    <a class="btn btn-white btn-xs" ng-show="detailBox.expandible" ng-click="appendCat()"><i class="fa fa-expand"></i></a>
+                    <a class="btn btn-white btn-xs" ng-show="!detailBox.expandible" ng-click="removeItem()"><i class="fa fa-trash"></i></a>
                 </div>
                 <div class="graph-ov-btn graph-zoom">
+                    <a class="btn btn-white btn-xs" ng-click="graphCenter()"><i class="fa fa-compass"></i></a>
+                    <hr/>
                     <a class="btn btn-white btn-xs" ng-click="graphZoom(3/2)"><i class="fa fa-plus"></i></a>
                     <hr/>
                     <a class="btn btn-white btn-xs" ng-click="graphZoom(2/3)"><i class="fa fa-minus"></i></a>
