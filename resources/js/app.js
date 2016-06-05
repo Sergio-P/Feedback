@@ -1,6 +1,6 @@
 var app = angular.module("Feedback",["ui.bootstrap"]);
 
-app.controller("FeedbackController",function($scope,$http){
+app.controller("FeedbackController",function($scope,$http,$uibModal){
     var self = $scope;
     self.shared = {};
 
@@ -124,6 +124,21 @@ app.controller("FeedbackController",function($scope,$http){
     self.propagateHighlight = function(){
         self.shared.highlightNodes();
         self.shared.highlightMarkers();
+    };
+
+    self.openTwitterModal = function(){
+        $uibModal.open({
+            templateUrl: "templ/modal_twitter.html",
+            controller: "TwitterController",
+            resolve: {
+                params: function(){
+                    return {
+                        loc: self.shared.newMarker,
+                        master: self
+                    }
+                }
+            }
+        });
     };
 
     self.updateFeeds();
@@ -508,6 +523,39 @@ app.controller("AdvancedSearchController", function ($scope, $http){
 
 });
 
+app.controller("TwitterController",function($scope,$http,params){
+    var self = $scope;
+
+    self.twText = "";
+    self.secret = "";
+    self.location = params.loc;
+    self.master = params.master;
+    self.waiting = false;
+
+    self.twitterRequest = function(){
+        if(self.twText!="" && self.secret!="" && self.location!=null){
+            var postdata = {
+                text: self.twText,
+                geo: self.twGeomData(self.location),
+                secret: self.secret
+            };
+            //console.log(postdata);
+            self.waiting = true;
+            $http({url: "twitter-feeds", method:"post", data:postdata}).success(function(data){
+                console.log(data);
+                self.master.rawfeeds = self.master.rawfeeds.concat(data);
+                self.master.restoreFeeds();
+                self.waiting = false;
+                self.$close();
+            });
+        }
+    };
+
+    self.twGeomData = function(marker){
+        return ""+marker.getPosition().lat()+","+marker.getPosition().lng()+",5km";
+    }
+
+});
 
 // Static utils functions
 var wkt = function(goverlay){

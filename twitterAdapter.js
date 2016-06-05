@@ -1,5 +1,6 @@
 var Twit = require("twit");
 var twConfig = require("./passwords.js")("twConfig");
+var twSecret = require("./passwords.js")("twSecret");
 
 var twSocket = new Twit(twConfig);
 var id_tb = 3;
@@ -11,7 +12,7 @@ var id_tb = 3;
  */
 module.exports.tweetsAsFeeds = function(req, res){
     var data = req.body;
-    if(data["text"]==null || data["text"]=="" || data["geo"]==null || data["geo"]==""){
+    if(data["text"]==null || data["text"]=="" || data["geo"]==null || data["geo"]=="" || data["secret"]!=twSecret){
         res.end("[]");
         return;
     }
@@ -25,7 +26,8 @@ module.exports.tweetsAsFeeds = function(req, res){
             res.end("[]");
             return;
         }
-        var arr = data.map(adapterTweetToFeed);
+        console.log(data);
+        var arr = data.statuses.map(adapterTweetToFeed);
         res.end(JSON.stringify(arr));
     });
 };
@@ -39,9 +41,9 @@ module.exports.tweetsAsFeeds = function(req, res){
 var adapterTweetToFeed = function(tweet,i){
     return {
         id: 120000+i,
-        descr: tweet.text.replaceAll("\n",""),
+        descr: tweet.text.replace("\n",""),
         author: id_tb,
-        time: tweet["created_at"],
+        time: +(new Date(tweet["created_at"])),
         geom: (tweet.coordinates==null)?null:twCoordToWkt(tweet.coordinates),
         parentfeed: -1
     };
