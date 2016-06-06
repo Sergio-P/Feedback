@@ -2,7 +2,8 @@
     <h3 class="modal-title">Import data from Twitter <i class="fa fa-twitter"></i></h3>
 </div>
 <div class="modal-body">
-    <h4>Choose keywords and select a point in the map (using the marker option) to send a request to Twitter</h4>
+    <span>Import most recent tweets from Twitter which match the keywords and are close to the selected point in the map.</span>
+    <br/><br/>
     <div class="row">
         <div class="col-xs-4">Keywords:</div>
         <div class="col-xs-8"><input class="form-control input-sm" ng-model="twText"/></div>
@@ -21,9 +22,7 @@
     <br/>
     <hr/>
     <br/>
-    <div><i class="fa fa-info"></i> Tweets are only stored temporaly, all these data will be lost on reload.</div>
     <br/>
-    <hr/>
     <div class="row">
         <div class="col-xs-4"></div>
         <div class="col-xs-4"><span ng-show="waiting"><i class="fa fa-refresh fa-spin"></i> Waiting response...</span></div>
@@ -31,5 +30,4 @@
             <button class="btn btn-success pull-right" ng-disabled="location==null || waiting" ng-click="twitterRequest()">Send Request</button>
         </div>
     </div>
-    <br/>
 </div>
