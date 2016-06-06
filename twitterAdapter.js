@@ -1,6 +1,8 @@
 var Twit = require("twit");
+var pg = require('pg');
 var twConfig = require("./passwords.js")("twConfig");
 var twSecret = require("./passwords.js")("twSecret");
+var conString = require("./passwords.js")("conString");
 
 var twSocket = new Twit(twConfig);
 var id_tb = 3;
@@ -28,6 +30,9 @@ module.exports.tweetsAsFeeds = function(req, res){
         }
         console.log(data);
         var arr = data.statuses.map(adapterTweetToFeed);
+        for(var i=0; i<arr.length; i++){
+            addDBTweet(arr[i], req.session.ses);
+        }
         res.end(JSON.stringify(arr));
     });
 };
@@ -60,3 +65,18 @@ var twCoordToWkt = function(coords){
     }
     return null;
 };
+
+/**
+ * Adds a tweet feed to the database
+ * @param tw The tweet feed object to be added
+ * @param ses The session where the feed belongs to
+ */
+function addDBTweet(tw,ses){
+    var sql = "insert into feeds(descr,time,author,sesid) values($1,$2,$3,$4);";
+    var db = new pg.Client(conString);
+    db.connect();
+    var qry = db.query(sql,[tw.descr,new Date(tw.time),tw.author,ses]);
+    qry.on("end",function(){
+        db.end();
+    });
+}
