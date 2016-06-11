@@ -216,7 +216,7 @@ a.map-btn {
     top: 51%;
     width: 28px;
     padding: 4px;
-    height: 28px;
+    /*height: 28px;*/
 }
 
 .graph-zoom{

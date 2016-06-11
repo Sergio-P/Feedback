@@ -11,6 +11,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     self.usersIdHash = {};
     self.tagMap = {};
     self.highlights = [];
+    self.twitterEnabled = false;
 
     self.updateFeeds = function(){
         $http({url: "feed-list", method: "post"}).success(function(data){
@@ -50,6 +51,8 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
             self.users = data;
             for(var i=0; i<self.users.length; i++){
                 self.usersIdHash[self.users[i].id] = self.users[i];
+                if(self.users[i].id == 3)
+                    self.twitterEnabled = true;
             }
         });
     };
@@ -126,7 +129,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         self.shared.highlightMarkers();
     };
 
-    self.openTwitterModal = function(){
+    self.openTwitterModal = function(deftxt){
         $uibModal.open({
             templateUrl: "templ/modal_twitter.html",
             controller: "TwitterController",
@@ -134,7 +137,8 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
                 params: function(){
                     return {
                         loc: self.shared.newMarker,
-                        master: self
+                        master: self,
+                        deftext: deftxt
                     }
                 }
             }
@@ -246,6 +250,11 @@ app.controller("GraphController", function($scope){
         console.log(feedsr);
         self.setFeeds(feedsr);
         self.detailBox.show = false;
+    };
+
+    self.searchFromTw = function(){
+        var cat = self.detailBox.val;
+        self.openTwitterModal("#"+getKeyWithPreffix(self.hashtags,cat.substring(1)));
     };
 
     self.shared.highlightNodes = function(){
@@ -526,11 +535,17 @@ app.controller("AdvancedSearchController", function ($scope, $http){
 app.controller("TwitterController",function($scope,$http,params){
     var self = $scope;
 
-    self.twText = "";
-    self.secret = "";
+    if(params.deftext!=null)
+        self.twText = params.deftext;
+    else
+        self.twText = "";
     self.location = params.loc;
     self.master = params.master;
     self.waiting = false;
+    if(self.master.shared.secret!=null)
+        self.secret = self.master.shared.secret;
+    else
+        self.secret = "";
 
     self.twitterRequest = function(){
         if(self.twText!="" && self.secret!="" && self.location!=null){
@@ -539,7 +554,7 @@ app.controller("TwitterController",function($scope,$http,params){
                 geo: self.twGeomData(self.location),
                 secret: self.secret
             };
-            //console.log(postdata);
+            self.master.shared.secret = self.secret;
             self.waiting = true;
             $http({url: "twitter-feeds", method:"post", data:postdata}).success(function(data){
                 console.log(data);
@@ -603,4 +618,12 @@ var lematize = function(word){
         return tildes[char] || char;
     });
     return w;
+};
+
+var getKeyWithPreffix = function(hshmap, preffix){
+    for(var k in hshmap){
+        if(k.toLowerCase().indexOf(preffix)!=-1)
+            return k;
+    }
+    return "";
 };

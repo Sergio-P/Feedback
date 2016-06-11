@@ -42,7 +42,7 @@
                   <i class="fa fa-bars"></i>
               </a>
               <ul uib-dropdown-menu role="menu" aria-labelledby="simple-dropdown">
-                  <li role="menuitem"><a ng-click="openTwitterModal()">Import from Twitter</a></li>
+                  <li role="menuitem" ng-show="twitterEnabled"><a ng-click="openTwitterModal()">Import from Twitter</a></li>
                   <li role="menuitem"><a href="seslist">Change Session</a></li>
                   <li role="menuitem"><a href="logout">Log out</a></li>
               </ul>
@@ -84,6 +84,7 @@
                 <div id="graph"></div>
                 <div class="graph-ov-btn graph-descr" ng-show="detailBox.show">
                     <a class="btn btn-white btn-xs" ng-show="detailBox.expandible" ng-click="appendCat()"><i class="fa fa-expand"></i></a>
+                    <a class="btn btn-white btn-xs" ng-show="detailBox.expandible && twitterEnabled" ng-click="searchFromTw()"><i class="fa fa-twitter"></i></a>
                     <a class="btn btn-white btn-xs" ng-show="!detailBox.expandible" ng-click="removeItem()"><i class="fa fa-trash"></i></a>
                 </div>
                 <div class="graph-ov-btn graph-zoom">
