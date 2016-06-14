@@ -184,7 +184,7 @@ app.controller("GraphController", function($scope){
             },
             edges: {
                 width: 1,
-                length: 100,
+                length: 70 + nds.length*2,
                 color: {
                     color: "#666666",
                     highlight: "#23b569"

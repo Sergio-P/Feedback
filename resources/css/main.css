@@ -98,6 +98,19 @@ hr{
     background-color: #ceffd2;
 }
 
+.feed-box .extra-box{
+    display: none;
+    text-align: right;
+}
+
+.feed-box.highlight .extra-box{
+    display: block;
+}
+
+.extra-box a{
+    color: #666;
+}
+
 .angular-google-map{
     width: 300px;
     height: 200px;

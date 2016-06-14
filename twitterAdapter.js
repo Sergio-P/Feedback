@@ -50,7 +50,8 @@ var adapterTweetToFeed = function(tweet,i){
         author: id_tb,
         time: +(new Date(tweet["created_at"])),
         geom: (tweet.coordinates==null)?null:twCoordToWkt(tweet.coordinates),
-        parentfeed: -1
+        parentfeed: -1,
+        extra: tweet.id_str+"|"+tweet.user.name
     };
 };
 
@@ -72,10 +73,10 @@ var twCoordToWkt = function(coords){
  * @param ses The session where the feed belongs to
  */
 function addDBTweet(tw,ses){
-    var sql = "insert into feeds(descr,time,author,sesid) values($1,$2,$3,$4);";
+    var sql = "insert into feeds(descr,time,author,sesid,extra) values($1,$2,$3,$4,$5);";
     var db = new pg.Client(conString);
     db.connect();
-    var qry = db.query(sql,[tw.descr,new Date(tw.time),tw.author,ses]);
+    var qry = db.query(sql,[tw.descr,new Date(tw.time),tw.author,ses,tw.extra]);
     qry.on("end",function(){
         db.end();
     });
