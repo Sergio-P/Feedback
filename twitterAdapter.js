@@ -45,7 +45,7 @@ module.exports.tweetsAsFeeds = function(req, res){
  */
 var adapterTweetToFeed = function(tweet,i){
     return {
-        id: 120000+i,
+        id: +(tweet.id_str),
         descr: tweet.text.replace("\n",""),
         author: id_tb,
         time: +(new Date(tweet["created_at"])),
