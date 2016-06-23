@@ -546,6 +546,7 @@ app.controller("TwitterController",function($scope,$http,params){
         self.secret = self.master.shared.secret;
     else
         self.secret = "";
+    self.trends = [];
 
     self.twitterRequest = function(){
         if(self.twText!="" && self.secret!="" && self.location!=null){
@@ -566,9 +567,20 @@ app.controller("TwitterController",function($scope,$http,params){
         }
     };
 
+    self.getTrends = function(){
+        $http({url: "twitter-trends", method:"post"}).success(function(data) {
+            console.log(data);
+            self.trends = data.sort(function(a,b){return a.popular- b.popular}).slice(0,15);
+        });
+    };
+
+    self.fillText = function(text){
+        self.twText = text;
+    };
+
     self.twGeomData = function(marker){
         return ""+marker.getPosition().lat()+","+marker.getPosition().lng()+",5km";
-    }
+    };
 
 });
 

@@ -14,7 +14,7 @@ var id_tb = 3;
  */
 module.exports.tweetsAsFeeds = function(req, res){
     var data = req.body;
-    if(data["text"]==null || data["text"]=="" || data["geo"]==null || data["geo"]=="" || data["secret"]!=twSecret){
+    if(req.session.uid==null || data["text"]==null || data["text"]=="" || data["geo"]==null || data["geo"]=="" || data["secret"]!=twSecret){
         res.end("[]");
         return;
     }
@@ -33,6 +33,24 @@ module.exports.tweetsAsFeeds = function(req, res){
         for(var i=0; i<arr.length; i++){
             addDBTweet(arr[i], req.session.ses);
         }
+        res.end(JSON.stringify(arr));
+    });
+};
+
+
+module.exports.trendings = function(req, res){
+    if(req.session.uid==null){
+        res.end("[]");
+        return;
+    }
+    var twOptions = {
+        id: 1
+    };
+    twSocket.get("trends/place", twOptions, function(err, data, response){
+        console.log(data);
+        var arr = data[0].trends.map(function(e){
+            return {"topic": e.name, "popular": e["tweet_volume"]};
+        });
         res.end(JSON.stringify(arr));
     });
 };

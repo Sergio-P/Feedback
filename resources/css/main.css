@@ -176,6 +176,11 @@ a.green{
     color: #008800;
 }
 
+a.spatied{
+    display: inline-block;
+    margin-right: 8px;
+}
+
 a.green:hover{
     color: #00c523;
 }
