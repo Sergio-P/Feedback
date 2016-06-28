@@ -10,6 +10,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     self.users = [];
     self.usersIdHash = {};
     self.tagMap = {};
+    self.fuzzyPlaces = {};
     self.highlights = [];
     self.twitterEnabled = false;
 
@@ -17,10 +18,13 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         $http({url: "feed-list", method: "post"}).success(function(data){
             self.feeds = data;
             self.tagMap = {};
+            self.fuzzyPlaces = {};
             for(var i = 0; i < self.feeds.length; i++){
                 var f = self.feeds[i];
                 f.prettyText = self.prettyPrintFeed(f.descr, f.id);
+                self.addFuzzyPlace(f.extra, f.id);
             }
+            console.log(self.fuzzyPlaces);
             self.rawfeeds = self.feeds;
             self.shared.updateNetwork();
             self.shared.updateMap();
@@ -109,6 +113,18 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         }
     };
 
+    self.addFuzzyPlace = function(extra, fid){
+        if(extra==null) return;
+        var wktcode = extra.split("|")[2];
+        if(wktcode == null) return;
+        if(wktcode in self.fuzzyPlaces && !self.fuzzyPlaces[wktcode].includes(fid)){
+            self.fuzzyPlaces[wktcode].push(fid);
+        }
+        else{
+            self.fuzzyPlaces[wktcode] = [fid];
+        }
+    };
+
     self.highlightHashtag = function(hashtag) {
         self.highlights = [];
         for (var i = 0; i < self.feeds.length; i++) {
@@ -121,6 +137,11 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
 
     self.highlightUnique = function(fid){
         self.highlights = [fid];
+        self.propagateHighlight();
+    };
+
+    self.setHighlights = function(arr){
+        self.highlights = arr;
         self.propagateHighlight();
     };
 
@@ -270,6 +291,7 @@ app.controller("MapController",function($scope){
     var self = $scope;
     self.mapProp = { center: {lat: -33, lng: -72 }, zoom: 8 };
     self.feedsMarkers = {};
+    self.fuzzyMarkers = [];
 
     self.init = function(){
         self.map = new google.maps.Map($("#map")[0],{
@@ -317,13 +339,38 @@ app.controller("MapController",function($scope){
             }})(fid));
             self.feedsMarkers[fid] = mark;
         }
+        for(var wkt in self.fuzzyPlaces){
+            var vals = self.fuzzyPlaces[wkt];
+            var mark = new google.maps.Marker({
+                map: self.map,
+                position: wktToLatLng(wkt),
+                icon: "gpx/fuzzy_red.png"
+            });
+            google.maps.event.addListener(mark,"click",(function(a,m){return function(){
+                self.setHighlights(a);
+                self.highlightFuzzy(m);
+                $scope.$apply();
+            }})(vals,mark));
+            self.fuzzyMarkers.push(mark);
+        }
     };
 
     self.removeAllMarkers = function(){
         for(var id in self.feedsMarkers){
             self.feedsMarkers[id].setMap(null);
         }
+        for(var i in self.fuzzyMarkers){
+            self.fuzzyMarkers[i].setMap(null);
+        }
         self.feedsMarkers = {};
+        self.fuzzyMarkers = [];
+    };
+
+    self.highlightFuzzy = function(fuzmark){
+        for(var i in self.fuzzyMarkers){
+            self.fuzzyMarkers[i].setIcon("gpx/fuzzy_red.png");
+        }
+        fuzmark.setIcon("gpx/fuzzy_green.png");
     };
 
     self.setMapDrawingMode = function(mode){

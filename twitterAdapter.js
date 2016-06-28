@@ -29,7 +29,7 @@ module.exports.tweetsAsFeeds = function(req, res){
             return;
         }
         console.log(data);
-        var arr = data.statuses.map(adapterTweetToFeed);
+        var arr = data.statuses.map(adapterTweetToFeed(twOptions.geocode));
         for(var i=0; i<arr.length; i++){
             addDBTweet(arr[i], req.session.ses);
         }
@@ -57,19 +57,21 @@ module.exports.trendings = function(req, res){
 
 /**
  * Converts a tweet object to a feed object
- * @param tweet The tweet to be converted
- * @param i The index relative to the tweet list
- * @return The feed object that represent the tweet
+ * @param gc geocode to be used as extra
+ * @return The function to wrap the feed object that represent the tweet
  */
-var adapterTweetToFeed = function(tweet,i){
-    return {
-        id: +(tweet.id_str),
-        descr: tweet.text.replace("\n",""),
-        author: id_tb,
-        time: +(new Date(tweet["created_at"])),
-        geom: (tweet.coordinates==null)?null:twCoordToWkt(tweet.coordinates),
-        parentfeed: -1,
-        extra: tweet.id_str+"|"+tweet.user.name
+var adapterTweetToFeed = function(gc){
+    var ss = wktFromCoords(gc.split(",")[1],gc.split(",")[0]);
+    return function(tweet,i){
+        return {
+            id: +(tweet.id_str),
+            descr: tweet.text.replace("\n", ""),
+            author: id_tb,
+            time: +(new Date(tweet["created_at"])),
+            geom: (tweet.coordinates == null) ? null : twCoordToWkt(tweet.coordinates),
+            parentfeed: -1,
+            extra: tweet.id_str + "|" + tweet.user.name + "|" + ss
+        };
     };
 };
 
@@ -85,16 +87,20 @@ var twCoordToWkt = function(coords){
     return null;
 };
 
+var wktFromCoords = function(lng,lat){
+    return "POINT("+lng+" "+lat+")";
+};
+
 /**
  * Adds a tweet feed to the database
  * @param tw The tweet feed object to be added
  * @param ses The session where the feed belongs to
  */
 function addDBTweet(tw,ses){
-    var sql = "insert into feeds(descr,time,author,sesid,extra) values($1,$2,$3,$4,$5);";
+    var sql = "insert into feeds(descr,time,author,sesid,geom,extra) values($1,$2,$3,$4,$5,$6);";
     var db = new pg.Client(conString);
     db.connect();
-    var qry = db.query(sql,[tw.descr,new Date(tw.time),tw.author,ses,tw.extra]);
+    var qry = db.query(sql,[tw.descr,new Date(tw.time),tw.author,ses,tw.geom,tw.extra]);
     qry.on("end",function(){
         db.end();
     });
