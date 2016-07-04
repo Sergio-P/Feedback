@@ -588,6 +588,7 @@ app.controller("TwitterController",function($scope,$http,params){
         self.twText = "";
     self.location = params.loc;
     self.master = params.master;
+    self.searchType = "hashtag";
     self.waiting = false;
     if(self.master.shared.secret!=null)
         self.secret = self.master.shared.secret;
@@ -596,7 +597,7 @@ app.controller("TwitterController",function($scope,$http,params){
     self.trends = [];
 
     self.twitterRequest = function(){
-        if(self.twText!="" && self.secret!="" && self.location!=null){
+        if(self.searchType=="hashtag" && self.twText!="" && self.secret!="" && self.location!=null){
             var postdata = {
                 text: self.twText,
                 geo: self.twGeomData(self.location),
@@ -605,6 +606,21 @@ app.controller("TwitterController",function($scope,$http,params){
             self.master.shared.secret = self.secret;
             self.waiting = true;
             $http({url: "twitter-feeds", method:"post", data:postdata}).success(function(data){
+                console.log(data);
+                self.master.rawfeeds = self.master.rawfeeds.concat(data);
+                self.master.restoreFeeds();
+                self.waiting = false;
+                self.$close();
+            });
+        }
+        else if(self.searchType=="user" && self.twText!="" && self.secret!=""){
+            var postdata = {
+                user: self.twText,
+                secret: self.secret
+            };
+            self.master.shared.secret = self.secret;
+            self.waiting = true;
+            $http({url: "twitter-user", method:"post", data:postdata}).success(function(data){
                 console.log(data);
                 self.master.rawfeeds = self.master.rawfeeds.concat(data);
                 self.master.restoreFeeds();

@@ -166,6 +166,7 @@ app.post("/add-ses-users", function(req,res){
 
 app.post("/twitter-feeds", twAdpt.tweetsAsFeeds);
 app.post("/twitter-trends", twAdpt.trendings);
+app.post("/twitter-user", twAdpt.userTweets);
 
 function addSesUser(uid,ses){
     var sql = "insert into sesusers(sesid,uid) values ($1,$2)";

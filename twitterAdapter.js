@@ -55,13 +55,40 @@ module.exports.trendings = function(req, res){
     });
 };
 
+module.exports.userTweets = function(req, res){
+    var data = req.body;
+    if(req.session.uid==null || data["user"]==null || data["user"]=="" || data["secret"]!=twSecret){
+        res.end("[]");
+        return;
+    }
+    var twOptions = {
+        "screen_name": data["user"],
+        count: 15,
+        "include_rts": false
+    };
+    twSocket.get('statuses/user_timeline', twOptions, function(err, data, response) {
+        if(err){
+            res.end("[]");
+            return;
+        }
+        console.log(data);
+        var arr = data.map(adapterTweetToFeed(null));
+        for(var i=0; i<arr.length; i++){
+            addDBTweet(arr[i], req.session.ses);
+        }
+        res.end(JSON.stringify(arr));
+    });
+};
+
 /**
  * Converts a tweet object to a feed object
  * @param gc geocode to be used as extra
  * @return The function to wrap the feed object that represent the tweet
  */
 var adapterTweetToFeed = function(gc){
-    var ss = wktFromCoords(gc.split(",")[1],gc.split(",")[0]);
+    var ss = "";
+    if(gc!=null)
+        ss = wktFromCoords(gc.split(",")[1],gc.split(",")[0]);
     return function(tweet,i){
         return {
             id: +(tweet.id_str),
@@ -70,7 +97,7 @@ var adapterTweetToFeed = function(gc){
             time: +(new Date(tweet["created_at"])),
             geom: (tweet.coordinates == null) ? null : twCoordToWkt(tweet.coordinates),
             parentfeed: -1,
-            extra: tweet.id_str + "|" + tweet.user.name + "|" + ss
+            extra: tweet.id_str + "|" + tweet.user.name + ((ss!="")?"|":"") + ss
         };
     };
 };
