@@ -150,16 +150,17 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         self.shared.highlightMarkers();
     };
 
-    self.openTwitterModal = function(deftxt){
+    self.openTwitterModal = function(deftxt, deftype, defloc){
         $uibModal.open({
             templateUrl: "templ/modal_twitter.html",
             controller: "TwitterController",
             resolve: {
                 params: function(){
                     return {
-                        loc: self.shared.newMarker,
+                        loc: (defloc==null)?self.shared.newMarker:defloc,
                         master: self,
-                        deftext: deftxt
+                        deftext: deftxt,
+                        deftype: deftype
                     }
                 }
             }
@@ -609,7 +610,10 @@ app.controller("TwitterController",function($scope,$http,params){
         self.twText = "";
     self.location = params.loc;
     self.master = params.master;
-    self.searchType = "hashtag";
+    if(params.deftype != null)
+        self.searchType = params.deftype;
+    else
+        self.searchType = "hashtag";
     self.waiting = false;
     if(self.master.shared.secret!=null)
         self.secret = self.master.shared.secret;
@@ -663,6 +667,7 @@ app.controller("TwitterController",function($scope,$http,params){
     };
 
     self.twGeomData = function(marker){
+        if(typeof marker == "string") return marker+",5km";
         return ""+marker.getPosition().lat()+","+marker.getPosition().lng()+",5km";
     };
 
@@ -672,6 +677,7 @@ app.controller("HistoryListController",function($scope,$http,params){
     var self = $scope;
     var hists = params.list;
     self.items = [];
+    self.master = params.master;
 
     self.init = function(){
         for(var i=0; i<hists.length; i++){
@@ -701,7 +707,11 @@ app.controller("HistoryListController",function($scope,$http,params){
     };
 
     self.resendSearch = function(id){
-        console.log(hists.filter(function(e){return e.id==id;})[0].text);
+        var qry = JSON.parse(hists.filter(function(e){return e.id==id;})[0].query);
+        if(qry.type == "t")
+            self.master.openTwitterModal(qry.options.q,"hashtag",qry.options.geocode);
+        else if(qry.type == "u")
+            self.master.openTwitterModal(qry.options["screen_name"],"user");
     };
 
     self.init();
