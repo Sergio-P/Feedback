@@ -35,6 +35,8 @@ module.exports.tweetsAsFeeds = function(req, res){
         }
         res.end(JSON.stringify(arr));
     });
+    var searchContent = {type: "t", time: Date.now(), options: twOptions};
+    storeDBSearch(req.session.uid,req.session.ses,JSON.stringify(searchContent));
 };
 
 
@@ -78,6 +80,8 @@ module.exports.userTweets = function(req, res){
         }
         res.end(JSON.stringify(arr));
     });
+    var searchContent = {type: "u", time: Date.now(), options: twOptions};
+    storeDBSearch(req.session.uid,req.session.ses,JSON.stringify(searchContent));
 };
 
 /**
@@ -132,3 +136,19 @@ function addDBTweet(tw,ses){
         db.end();
     });
 }
+
+/**
+ * Stores a search done to twitter api
+ * @param uid the id of the user
+ * @param ses the id of the current session
+ * @param text the json stringfied text of the search
+ */
+var storeDBSearch = function(uid,ses,text){
+    var sql = "insert into history(uid,sesid,query) values($1,$2,$3)";
+    var db = new pg.Client(conString);
+    db.connect();
+    var qry = db.query(sql,[uid,ses,text]);
+    qry.on("end",function(){
+        db.end();
+    });
+};

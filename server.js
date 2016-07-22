@@ -164,6 +164,13 @@ app.post("/add-ses-users", function(req,res){
     res.end('{"status":"ok"}');
 });
 
+app.post("/history-list", rpg.multiSQL({
+    dbcon: conString,
+    sql: "select id, query from history where uid = $1 and sesid = $2",
+    sesReqData: ["uid","ses"],
+    sqlParams: [rpg.sqlParam("ses","uid"),rpg.sqlParam("ses","ses")]
+}));
+
 app.post("/twitter-feeds", twAdpt.tweetsAsFeeds);
 app.post("/twitter-trends", twAdpt.trendings);
 app.post("/twitter-user", twAdpt.userTweets);

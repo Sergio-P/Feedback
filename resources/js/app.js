@@ -647,6 +647,40 @@ app.controller("TwitterController",function($scope,$http,params){
 
 });
 
+app.controller("HistoryListController",function($scope,$http,params){
+    var self = $scope;
+    var hists = params.list;
+    self.items = [];
+
+    for(var i=0; i<hists.length; i++){
+        self.items.push({
+            id: hists.id,
+            text: self.getText(hists.query)
+        });
+    }
+
+    self.getText = function(query){
+        var data = JSON.parse(query);
+        var builder = "";
+        if(data.type == "t"){
+            builder += "Hashtag-content search <br>";
+            builder += "Content: "+data.options.q+"<br>";
+            builder += "Location: "+data.options.geo+"<br>";
+        }
+        else if(data.type == "u"){
+            builder += "User search <br>";
+            builder += "Username: @"+data.options["screen_name"]+"<br>";
+        }
+        builder += "Search time: " + new Date(data.time);
+        return builder;
+    };
+
+    self.resendSearch = function(id){
+        console.log(hists.filter(function(e){return e.id==id;})[0].text);
+    };
+
+});
+
 // Static utils functions
 var wkt = function(goverlay){
     if(goverlay instanceof google.maps.Marker){
