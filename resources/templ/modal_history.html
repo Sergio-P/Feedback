@@ -3,9 +3,9 @@
 </div>
 <div class="modal-body">
     <ul class="list-group">
-        <li ng-repeat="item in params.items" class="list-group-item">
-            <span>{{item.text}}</span>
+        <li ng-repeat="item in items" class="list-group-item">
             <a class="btn btn-default pull-right" ng-click="resendSearch(item.id)">Re-send</a>
+            <span ng-bind="item.text" class="respect-line-breaks"></span>
         </li>
     </ul>
 </div>

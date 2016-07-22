@@ -245,3 +245,7 @@ a.map-btn {
     height: 74px;
     padding: 4px;
 }
+
+.respect-line-breaks{
+    white-space: pre-wrap;
+}

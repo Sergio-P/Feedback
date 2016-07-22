@@ -166,6 +166,27 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         });
     };
 
+    self.openHistoryModal = function(hlist){
+        $uibModal.open({
+            templateUrl: "templ/modal_history.html",
+            controller: "HistoryListController",
+            resolve: {
+                params: function(){
+                    return {
+                        master: self,
+                        list: hlist
+                    }
+                }
+            }
+        });
+    };
+
+    self.getHistorySearches = function(){
+        $http({url: "history-list", method: "post"}).success(function(data){
+            self.openHistoryModal(data);
+        });
+    };
+
     self.updateFeeds();
     self.updateUsers();
 
@@ -652,24 +673,28 @@ app.controller("HistoryListController",function($scope,$http,params){
     var hists = params.list;
     self.items = [];
 
-    for(var i=0; i<hists.length; i++){
-        self.items.push({
-            id: hists.id,
-            text: self.getText(hists.query)
-        });
-    }
+    self.init = function(){
+        for(var i=0; i<hists.length; i++){
+            self.items.push({
+                id: hists[i].id,
+                text: self.getText(hists[i].query)
+            });
+        }
+    };
 
     self.getText = function(query){
         var data = JSON.parse(query);
+        console.log(query);
         var builder = "";
         if(data.type == "t"){
-            builder += "Hashtag-content search <br>";
-            builder += "Content: "+data.options.q+"<br>";
-            builder += "Location: "+data.options.geo+"<br>";
+            builder += "Hashtag - Content Search \n";
+            builder += "Content: "+data.options.q+"\n";
+            var geo = data.options.geocode.split(",");
+            builder += "Location: "+geo[0]+", "+geo[1]+"\n";
         }
         else if(data.type == "u"){
-            builder += "User search <br>";
-            builder += "Username: @"+data.options["screen_name"]+"<br>";
+            builder += "User Search \n";
+            builder += "Username: @"+data.options["screen_name"]+"\n";
         }
         builder += "Search time: " + new Date(data.time);
         return builder;
@@ -679,6 +704,7 @@ app.controller("HistoryListController",function($scope,$http,params){
         console.log(hists.filter(function(e){return e.id==id;})[0].text);
     };
 
+    self.init();
 });
 
 // Static utils functions
