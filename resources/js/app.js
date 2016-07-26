@@ -99,7 +99,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
             k = part.to;
         }
         feedf += feed.substring(k);
-        return feedf;
+        return linkifyHtml(feedf,{linkClass: "green"});
     };
 
     self.addToTagMap = function(tag, fid){
@@ -148,6 +148,10 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     self.propagateHighlight = function(){
         self.shared.highlightNodes();
         self.shared.highlightMarkers();
+        /*
+        var s = $('.feed-box.highlight:first').offset().top;
+        $(".scrollable").scrollTop(s);
+        */
     };
 
     self.openTwitterModal = function(deftxt, deftype, defloc){

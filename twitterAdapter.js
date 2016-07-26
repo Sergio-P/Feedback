@@ -99,9 +99,9 @@ var adapterTweetToFeed = function(gc){
             descr: tweet.text.replace("\n", ""),
             author: id_tb,
             time: +(new Date(tweet["created_at"])),
-            geom: (tweet.coordinates == null) ? null : twCoordToWkt(tweet.coordinates),
+            geom: (tweet.coordinates == null) ? ((tweet.place == null)? null : twPlaceCoordToWkt(tweet.place["bounding_box"].coordinates) ): twCoordToWkt(tweet.coordinates),
             parentfeed: -1,
-            extra: tweet.id_str + "|" + tweet.user.name + ((ss!="")?"|":"") + ss
+            extra: tweet.id_str + "|@" + tweet.user["screen_name"] + ((ss!="")?"|":"") + ss
         };
     };
 };
@@ -116,6 +116,22 @@ var twCoordToWkt = function(coords){
         return "POINT("+coords.coordinates[0]+" "+coords.coordinates[1]+")";
     }
     return null;
+};
+
+/**
+ * Convert an array coordinate tweet object to wkt text
+ * @param crds coordinate tweet object to be converted
+ * @return string in wkt format or null if not a point.
+ */
+var twPlaceCoordToWkt = function(crds){
+    var coords = crds[0];
+    var slng = 0;
+    var slat = 0;
+    for(var i=0; i<coords.length; i++){
+        slng += coords[i][0];
+        slat += coords[i][1];
+    }
+    return "POINT("+(slng/coords.length)+" "+(slat/coords.length)+")";
 };
 
 var wktFromCoords = function(lng,lat){
