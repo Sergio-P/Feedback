@@ -148,10 +148,9 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     self.propagateHighlight = function(){
         self.shared.highlightNodes();
         self.shared.highlightMarkers();
-        /*
-        var s = $('.feed-box.highlight:first').offset().top;
-        $(".scrollable").scrollTop(s);
-        */
+        setTimeout(function(){
+            $(".feed-box.highlight:first")[0].scrollIntoView();
+        },100);
     };
 
     self.openTwitterModal = function(deftxt, deftype, defloc){
