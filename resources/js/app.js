@@ -556,7 +556,8 @@ app.controller("AdvancedSearchController", function ($scope, $http){
         dateIni: null,
         dateEnd: null,
         locFilt: null,
-        tagFilt: ""
+        tagFilt: "",
+        authorFilt: ""
     };
 
     self.search = function(){
@@ -591,6 +592,18 @@ app.controller("AdvancedSearchController", function ($scope, $http){
                 }
                 if(!hastag) continue;
             }
+
+            //Author Filter
+            s.authorFilt = s.authorFilt.toLowerCase();
+            if(s.authorFilt!=""){
+                var et = "";
+                if(f.extra!=null)
+                    et = f.extra.split("|")[1];
+                if(et==null) et = "";
+                if(self.usersIdHash[f.author].fullname.toLowerCase().indexOf(s.authorFilt) == -1
+                    && et.toLowerCase().indexOf(s.authorFilt) == -1) continue;
+            }
+
             //Add to filtarr
             filtarr.push(f);
         }
