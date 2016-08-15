@@ -1,0 +1,11 @@
+{
+  "name": "Feedback",
+  "version": "0.6.1",
+  "dependencies": {
+    "express": "*",
+    "express-session": "*",
+    "express-busboy": "*",
+    "pg": "*",
+    "twit": "*"
+  }
+}

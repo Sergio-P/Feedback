@@ -4,7 +4,7 @@ var session = require('express-session');
 var pg = require('pg');
 var crypto = require('crypto');
 var rpg = require("./rest-pg.js");
-var bodyParser = require('body-parser');
+var bb = require('express-busboy');
 var twAdpt = require("./twitterAdapter.js");
 
 var app = module.exports = express();
@@ -13,8 +13,7 @@ var conString = require("./passwords.js")("conString");
 var port = 8502;
 
 app.use(express.static(__dirname+'/resources'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
+bb.extend(app,{upload: true});
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.use(session({secret: 'ssshhh', saveUninitialized: false, resave: false}));
