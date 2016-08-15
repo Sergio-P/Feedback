@@ -49,6 +49,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     self.restoreFeeds = function(){
         if(self.feeds == self.rawfeeds) return;
         self.setFeeds(self.rawfeeds);
+        self.shared.quitMarker();
     };
 
     self.updateUsers = function(){
@@ -406,6 +407,10 @@ app.controller("MapController",function($scope){
         }
         self.drawingManager.setDrawingMode(null);
         self.drawingManager.setOptions({drawingControl: mode});
+    };
+
+    self.shared.quitMarker = function () {
+        self.setMapDrawingMode(true);
     };
 
     self.shared.highlightMarkers = function(){
