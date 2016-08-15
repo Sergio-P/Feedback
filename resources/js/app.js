@@ -733,8 +733,10 @@ app.controller("HistoryListController",function($scope,$http,params){
 
     self.resendSearch = function(id){
         var qry = JSON.parse(hists.filter(function(e){return e.id==id;})[0].query);
-        if(qry.type == "t")
-            self.master.openTwitterModal(qry.options.q,"hashtag",qry.options.geocode);
+        if(qry.type == "t") {
+            var geo = qry.options.geocode.split(",");
+            self.master.openTwitterModal(qry.options.q, "hashtag", geo[0]+","+geo[1]);
+        }
         else if(qry.type == "u")
             self.master.openTwitterModal(qry.options["screen_name"],"user");
         self.$dismiss();
