@@ -728,7 +728,7 @@ app.controller("HistoryListController",function($scope,$http,params){
             var geo = data.options.geocode.split(",");
             builder += "Location: "+geo[0]+", "+geo[1]+"\n";
             builder += "<br><span id='gloc"+data.time+"'></span>";
-            self.getGeoCode(geo[1],geo[0],"#gloc"+data.time);
+            self.getGeoCode(geo[0],geo[1],"#gloc"+data.time);
         }
         else if(data.type == "u"){
             builder += "User Search \n";
@@ -752,7 +752,8 @@ app.controller("HistoryListController",function($scope,$http,params){
     self.getGeoCode = function(lat,lng,elem){
         var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng;
         $http({url:url, method:"get"}).success(function(data){
-            angular.element(elem)[0].innerHTML = data.results[0]["formatted_address"];
+            if(data.results[0] != null)
+                angular.element(elem)[0].innerHTML = data.results[0]["formatted_address"];
         });
     };
 
