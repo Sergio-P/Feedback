@@ -5,7 +5,7 @@
     <ul class="list-group">
         <li ng-repeat="item in items" class="list-group-item">
             <a class="btn btn-default pull-right" ng-click="resendSearch(item.id)">Re-send</a>
-            <span class="respect-line-breaks">{{item.text | sanitize}}</span>
+            <span ng-bind-html="item.text | sanitize" class="respect-line-breaks"></span>
         </li>
     </ul>
 </div>
