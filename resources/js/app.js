@@ -727,8 +727,8 @@ app.controller("HistoryListController",function($scope,$http,params){
             builder += "Content: "+data.options.q+"\n";
             var geo = data.options.geocode.split(",");
             builder += "Location: "+geo[0]+", "+geo[1]+"\n";
-            builder += "<br><span id='gloc"+d.time+"'></span>";
-            self.getGeoCode(geo[1],geo[0],"#gloc"+d.time);
+            builder += "<br><span id='gloc"+data.time+"'></span>";
+            self.getGeoCode(geo[1],geo[0],"#gloc"+data.time);
         }
         else if(data.type == "u"){
             builder += "User Search \n";
