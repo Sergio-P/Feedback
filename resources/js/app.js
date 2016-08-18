@@ -540,6 +540,11 @@ app.directive('bindHtmlCompile', ['$compile', function ($compile) {
     };
 }]);
 
+app.filter("sanitize", ['$sce', function($sce) {
+    return function(htmlCode){
+        return $sce.trustAsHtml(htmlCode);
+    };
+}]);
 
 app.controller("SearchController", function($scope){
     var self = $scope;
