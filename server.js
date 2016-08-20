@@ -6,6 +6,7 @@ var crypto = require('crypto');
 var rpg = require("./rest-pg.js");
 var bb = require('express-busboy');
 var twAdpt = require("./twitterAdapter.js");
+var socket = require("./socket-config.js");
 
 var app = module.exports = express();
 var conString = require("./passwords.js")("conString");
@@ -145,7 +146,10 @@ app.post("/new-feed", rpg.execSQL({
     sesReqData: ["uid","ses"],
     postReqData: ["com"],
     sqlParams: [rpg.sqlParam("ses","uid"),rpg.sqlParam("post","com"),rpg.sqlParam("post","geom"),
-        rpg.sqlParam("ses","ses"),rpg.sqlParam("post","parent")]
+        rpg.sqlParam("ses","ses"),rpg.sqlParam("post","parent")],
+    onEnd: function(req,res,result){
+        socket.updMsg();
+    }
 }));
 
 app.post("/add-ses-users", function(req,res){
@@ -170,7 +174,7 @@ app.post("/history-list", rpg.multiSQL({
     sqlParams: [rpg.sqlParam("ses","uid"),rpg.sqlParam("ses","ses")]
 }));
 
-app.post("/twitter-feeds", twAdpt.tweetsAsFeeds);
+app.post("/twitter-feeds", twAdpt.tweetsAsFeeds(socket));
 app.post("/twitter-trends", twAdpt.trendings);
 app.post("/twitter-user", twAdpt.userTweets);
 
@@ -185,8 +189,11 @@ function addSesUser(uid,ses){
 }
 
 if(!module.parent){
-    app.listen(port,function(){
+    var http = require('http').createServer(app);
+    var io = require("socket.io")(http);
+    http.listen(port,function(){
         console.log("Listening at port "+port+"\n Ctrl + C to shut down");
     });
+    socket.configSocket(io);
 }
 

@@ -193,6 +193,12 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         });
     };
 
+    var socket = io("localhost:8503");
+
+    socket.on("upd",function(data){
+        self.updateFeeds();
+    });
+
     self.updateFeeds();
     self.updateUsers();
 

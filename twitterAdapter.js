@@ -12,31 +12,34 @@ var id_tb = 3;
  * @param req Request object from middleware
  * @param res Response object from middleware
  */
-module.exports.tweetsAsFeeds = function(req, res){
-    var data = req.body;
-    if(req.session.uid==null || data["text"]==null || data["text"]=="" || data["geo"]==null || data["geo"]=="" || data["secret"]!=twSecret){
-        res.end("[]");
-        return;
-    }
-    var twOptions = {
-        q: data["text"],
-        count: 15,
-        geocode: data["geo"]
-    };
-    twSocket.get('search/tweets', twOptions, function(err, data, response) {
-        if(err){
+module.exports.tweetsAsFeeds = function(socket){
+    return function(req, res){
+        var data = req.body;
+        if(req.session.uid==null || data["text"]==null || data["text"]=="" || data["geo"]==null || data["geo"]=="" || data["secret"]!=twSecret){
             res.end("[]");
             return;
         }
-        console.log(data);
-        var arr = data.statuses.map(adapterTweetToFeed(twOptions.geocode));
-        for(var i=0; i<arr.length; i++){
-            addDBTweet(arr[i], req.session.ses);
-        }
-        res.end(JSON.stringify(arr));
-    });
-    var searchContent = {type: "t", time: Date.now(), options: twOptions};
-    storeDBSearch(req.session.uid,req.session.ses,JSON.stringify(searchContent));
+        var twOptions = {
+            q: data["text"],
+            count: 15,
+            geocode: data["geo"]
+        };
+        twSocket.get('search/tweets', twOptions, function(err, data, response) {
+            if(err){
+                res.end("[]");
+                return;
+            }
+            console.log(data);
+            var arr = data.statuses.map(adapterTweetToFeed(twOptions.geocode));
+            for(var i=0; i<arr.length; i++){
+                addDBTweet(arr[i], req.session.ses);
+            }
+            res.end(JSON.stringify(arr));
+            socket.updMsg();
+        });
+        var searchContent = {type: "t", time: Date.now(), options: twOptions};
+        storeDBSearch(req.session.uid,req.session.ses,JSON.stringify(searchContent));
+    }
 };
 
 

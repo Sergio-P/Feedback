@@ -6,6 +6,7 @@
     "express-session": "*",
     "express-busboy": "*",
     "pg": "*",
-    "twit": "*"
+    "twit": "*",
+    "socket.io": "*"
   }
 }
