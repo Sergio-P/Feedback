@@ -147,8 +147,9 @@ app.post("/new-feed", rpg.execSQL({
     postReqData: ["com"],
     sqlParams: [rpg.sqlParam("ses","uid"),rpg.sqlParam("post","com"),rpg.sqlParam("post","geom"),
         rpg.sqlParam("ses","ses"),rpg.sqlParam("post","parent")],
-    onEnd: function(req,res,result){
+    onEnd: function(req,res){
         socket.updMsg();
+        res.send('{"status":"ok"}');
     }
 }));
 
