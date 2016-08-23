@@ -196,6 +196,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     var socket = io("http://saduewa.dcc.uchile.cl:8888/Feedback");
 
     socket.on("upd",function(data){
+	console.log("SOCKET");
         self.updateFeeds();
     });
 

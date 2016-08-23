@@ -1,5 +1,6 @@
 module.exports.configSocket = function(io){
     module.exports.updMsg = function(){
-        io.emit("upd",{});
+	console.log(io.of("/Feedback"));
+        io.of("/Feedback").emit("upd",{});
     };
 };
