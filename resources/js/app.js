@@ -193,7 +193,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         });
     };
 
-    var socket = io("http://saduewa.dcc.uchile.cl:8888/Feedback");
+    var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
 
     socket.on("upd",function(data){
 	    console.log("SOCKET");
@@ -424,14 +424,18 @@ app.controller("MapController",function($scope){
         var fuzzhgl = {};
         for(var idx in self.feedsMarkers){
             if(self.highlights.indexOf(parseInt(idx))!=-1){
-                console.log(1);
                 self.feedsMarkers[idx].setIcon("gpx/mgreenfx.png");
             }
             else{
                 self.feedsMarkers[idx].setIcon("gpx/mredfx.png");
             }
-            if(self.feedsMarkers[idx].extra!=null){
-                var coords = self.feedsMarkers[idx].extra.split("|")[2];
+	}
+	for(var i in self.highlights){
+            var idx = self.highlights[i];
+	    var fd = self.feeds.filter(function(f){ return f.id==idx;})[0];
+	    console.log(fd);
+            if(fd != null && fd.extra!=null){
+                var coords = fd.extra.split("|")[2];
                 fuzzhgl[coords] = true;
             }
         }
