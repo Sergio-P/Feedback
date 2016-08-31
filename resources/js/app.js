@@ -141,7 +141,8 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     };
 
     self.highlightContent = function(content) {
-        lcont = content.toLowerCase();
+        var lcont = (""+content).toLowerCase();
+        console.log(lcont);
         self.highlights = [];
         for (var i = 0; i < self.feeds.length; i++) {
             if (self.feeds[i].prettyText.toLowerCase().includes(lcont) ||

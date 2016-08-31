@@ -24,20 +24,21 @@ module.exports.tweetsAsFeeds = function(socket){
             count: 15,
             geocode: data["geo"]
         };
+        var inow = ""+(+Date.now());
         twSocket.get('search/tweets', twOptions, function(err, data, response) {
             if(err){
                 res.end("[]");
                 return;
             }
             console.log(data);
-            var arr = data.statuses.map(adapterTweetToFeed(twOptions.geocode));
+            var arr = data.statuses.map(adapterTweetToFeed(twOptions.geocode,inow));
             for(var i=0; i<arr.length; i++){
                 addDBTweet(arr[i], req.session.ses);
             }
             res.end(JSON.stringify(arr));
             socket.updMsg();
         });
-        var searchContent = {type: "t", time: Date.now(), options: twOptions};
+        var searchContent = {type: "t", time: inow, options: twOptions};
         storeDBSearch(req.session.uid,req.session.ses,JSON.stringify(searchContent));
     }
 };
@@ -71,19 +72,20 @@ module.exports.userTweets = function(req, res){
         count: 15,
         "include_rts": false
     };
+    var inow = ""+(+Date.now());
     twSocket.get('statuses/user_timeline', twOptions, function(err, data, response) {
         if(err){
             res.end("[]");
             return;
         }
         console.log(data);
-        var arr = data.map(adapterTweetToFeed(null));
+        var arr = data.map(adapterTweetToFeed(null,inow));
         for(var i=0; i<arr.length; i++){
             addDBTweet(arr[i], req.session.ses);
         }
         res.end(JSON.stringify(arr));
     });
-    var searchContent = {type: "u", time: Date.now(), options: twOptions};
+    var searchContent = {type: "u", time: inow, options: twOptions};
     storeDBSearch(req.session.uid,req.session.ses,JSON.stringify(searchContent));
 };
 
@@ -92,7 +94,7 @@ module.exports.userTweets = function(req, res){
  * @param gc geocode to be used as extra
  * @return The function to wrap the feed object that represent the tweet
  */
-var adapterTweetToFeed = function(gc){
+var adapterTweetToFeed = function(gc,inow){
     var ss = "";
     if(gc!=null)
         ss = wktFromCoords(gc.split(",")[1],gc.split(",")[0]);
@@ -104,7 +106,7 @@ var adapterTweetToFeed = function(gc){
             time: +(new Date(tweet["created_at"])),
             geom: (tweet.coordinates == null) ? ((tweet.place == null)? null : twPlaceCoordToWkt(tweet.place["bounding_box"].coordinates) ): twCoordToWkt(tweet.coordinates),
             parentfeed: -1,
-            extra: tweet.id_str + "|@" + tweet.user["screen_name"] + ((ss!="")?"|":"") + ss
+            extra: tweet.id_str + "|@" + tweet.user["screen_name"] + ((ss!="")?"|":"") + ss + "|" + inow
         };
     };
 };
