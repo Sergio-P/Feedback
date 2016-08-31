@@ -47,6 +47,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     };
 
     self.restoreFeeds = function(){
+        self.highlights = [];
         if(self.feeds == self.rawfeeds) return;
         self.setFeeds(self.rawfeeds);
         self.shared.quitMarker();
@@ -131,6 +132,19 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         self.highlights = [];
         for (var i = 0; i < self.feeds.length; i++) {
             if (self.feeds[i].prettyText.includes(hashtag)) {
+                self.highlights.push(self.feeds[i].id);
+            }
+        }
+        self.propagateHighlight();
+    };
+
+    self.highlightContent = function(content) {
+        lcont = content.toLowerCase();
+        self.highlights = [];
+        for (var i = 0; i < self.feeds.length; i++) {
+            if (self.feeds[i].prettyText.toLowerCase().includes(lcont) ||
+                    self.usersIdHash[self.feeds[i].author].fullname.toLowerCase().includes(lcont) ||
+                    self.feeds[i].extra.toLowerCase().includes(lcont)){
                 self.highlights.push(self.feeds[i].id);
             }
         }
@@ -565,7 +579,7 @@ app.controller("SearchController", function($scope){
 
     self.simpleSearch = function(){
         if(self.simpleSearchBox!="")
-            self.highlightHashtag(self.simpleSearchBox);
+            self.highlightContent(self.simpleSearchBox);
     };
 
     self.openAdvSearch = function(){
@@ -745,7 +759,7 @@ app.controller("HistoryListController",function($scope,$http,params){
             builder += "Content: "+data.options.q+"\n";
             var geo = data.options.geocode.split(",");
             builder += "Location: "+geo[0]+", "+geo[1]+"\n";
-            builder += "<br><span id='gloc"+data.time+"'></span>";
+            builder += "<span id='gloc"+data.time+"'></span><br>";
             self.getGeoCode(geo[0],geo[1],"#gloc"+data.time);
         }
         else if(data.type == "u"){

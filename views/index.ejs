@@ -29,7 +29,7 @@
         </div>
         <div class="col-xs-7">
             <div class="input-group" ng-controller="SearchController">
-                <input type="text" class="form-control" ng-model="simpleSearchBox"/>
+                <input type="text" class="form-control" ng-model="simpleSearchBox" ng-keypress="($event.which === 13)?simpleSearch():0"/>
                 <span class="input-group-btn">
                     <button class="btn btn-default" ng-click="restoreFeeds()"><i class="fa fa-times"></i></button>
                     <button class="btn btn-default" uib-popover-template="'templ/popover_search.html'" popover-placement="bottom-right" popover-is-open="advSearchOpen" ng-click="openAdvSearch()">
