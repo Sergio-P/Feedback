@@ -1,6 +1,6 @@
 create extension postgis;
 
-create table users (
+create table if not exists users (
     id serial,
     username text not null,
     fullname text not null,
@@ -10,7 +10,7 @@ create table users (
     primary key (id)
 );
 
-create table sessions (
+create table if not exists sessions (
     id  serial,
     name text not null,
     descr text,
@@ -21,14 +21,14 @@ create table sessions (
     foreign key(creator) references users(id)
 );
 
-create table sesusers (
+create table if not exists sesusers (
     sesid integer,
     uid integer,
     foreign key(sesid) references sessions(id),
     foreign key(uid) references users(id)
 );
 
-create table feeds (
+create table if not exists feeds (
     id serial,
     descr varchar(160) not null,
     time timestamp with time zone,
@@ -36,19 +36,20 @@ create table feeds (
     geom geometry,
     parentfeed integer,
     sesid integer,
+    extra text,
     primary key(id),
     foreign key(author) references users(id),
     foreign key(parentfeed) references feeds(id),
     foreign key(sesid) references sessions(id)
 );
 
-create table pictures (
+create table if not exists pictures (
     path text not null,
     fid integer,
     foreign key(fid) references feeds(id)
 );
 
-create table history (
+create table if not exists history (
     id serial,
     query text not null,
     uid integer,
@@ -56,4 +57,11 @@ create table history (
     primary key(id),
     foreign key(uid) references users(id),
     foreign key(sesid) references sessions(id)
+);
+
+--- ID 3 reserved for Twitter Bot
+insert into users(id,username,fullname,pass,mail)
+select 3,'twitterbot','Twitter Bot','#bot#','bot@tw'
+where not exists(
+    select id from users where id = 3
 );

@@ -5,7 +5,7 @@ var twSecret = require("./passwords.js")("twSecret");
 var conString = require("./passwords.js")("conString");
 
 var twSocket = new Twit(twConfig);
-var id_tb = 3;
+var id_tb = 3; // ID of twitter bot user
 
 /**
  * Middleware function to retrieve tweets from streaming api and return as feeds
