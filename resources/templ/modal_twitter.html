@@ -40,7 +40,9 @@
     <br/>
     <br/>
     <div class="row">
-        <div class="col-xs-4"></div>
+        <div class="col-xs-4">
+            <button class="btn btn-default" ng-click="$dismiss()">Close</button>
+        </div>
         <div class="col-xs-4"><span ng-show="waiting"><i class="fa fa-refresh fa-spin"></i> Waiting response...</span></div>
         <div class="col-xs-4">
             <button class="btn btn-success pull-right" ng-disabled="(location==null && searchType=='hashtag') || waiting" ng-click="twitterRequest()">Send Request</button>

@@ -367,10 +367,11 @@ app.controller("MapController",function($scope){
                 position: wktToLatLng(fgeom),
                 icon: "gpx/mredfx.png"
             });
-            google.maps.event.addListener(mark,"click",(function(a){return function(){
+            google.maps.event.addListener(mark,"click",(function(a,b){return function(){
                 self.highlightUnique(a);
+                self.map.moveTo(wktToLatLng(b));
                 $scope.$apply();
-            }})(fid));
+            }})(fid,fgeom));
             self.feedsMarkers[fid] = mark;
         }
         for(var wkt in self.fuzzyPlaces){
@@ -668,7 +669,8 @@ app.controller("TwitterController",function($scope,$http,params){
     self.trends = [];
 
     self.twitterRequest = function(){
-        if(self.searchType=="hashtag" && self.twText!="" && self.secret!="" && self.location!=null){
+        if(self.searchType=="hashtag" && self.secret!="" && self.location!=null){
+            if(self.twText=="") self.twText = "#";
             var postdata = {
                 text: self.twText,
                 geo: self.twGeomData(self.location),
@@ -686,7 +688,7 @@ app.controller("TwitterController",function($scope,$http,params){
         }
         else if(self.searchType=="user" && self.twText!="" && self.secret!=""){
             var postdata = {
-                user: self.twText,
+                user: self.twText.replace("@",""),
                 secret: self.secret
             };
             self.master.shared.secret = self.secret;
