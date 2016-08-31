@@ -12,7 +12,9 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     self.tagMap = {};
     self.fuzzyPlaces = {};
     self.highlights = [];
+    self.hlist = [];
     self.twitterEnabled = false;
+    self.historyOpened = false;
 
     self.updateFeeds = function(){
         $http({url: "feed-list", method: "post"}).success(function(data){
@@ -186,25 +188,14 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         });
     };
 
-    self.openHistoryModal = function(hlist){
-        $uibModal.open({
-            templateUrl: "templ/modal_history.html",
-            controller: "HistoryListController",
-            resolve: {
-                params: function(){
-                    return {
-                        master: self,
-                        list: hlist
-                    }
-                }
-            }
+    self.getHistorySearches = function(){
+        $http({url: "history-list", method: "post"}).success(function(data){
+            self.shared.updateHistory(data);
         });
     };
 
-    self.getHistorySearches = function(){
-        $http({url: "history-list", method: "post"}).success(function(data){
-            self.openHistoryModal(data);
-        });
+    self.toggleHistory = function(){
+        self.historyOpened = !self.historyOpened;
     };
 
     var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
@@ -735,31 +726,54 @@ app.controller("TwitterController",function($scope,$http,params){
 
 });
 
-app.controller("HistoryListController",function($scope,$http,params){
+app.controller("HistoryListController",function($scope,$http){
     var self = $scope;
-    var hists = params.list;
+    var hists = self.hlist;
     self.items = [];
-    self.master = params.master;
 
-    self.init = function(){
+    self.createItems = function(){
+        hists = self.hlist;
+        self.items = {};
         for(var i=0; i<hists.length; i++){
-            self.items.push({
-                id: hists[i].id,
-                text: self.getText(hists[i].query)
-            });
+            var data = JSON.parse(hists[i].query);
+            if(data.type=="u"){
+                if(self.items[data.options["screen_name"]]==null){
+                    self.items[data.options["screen_name"]] = {
+                        title: data.options["screen_name"],
+                        id: hists[i].id,
+                        dates: [data.time]
+                    };
+                }
+                else{
+                    self.items[data.options["screen_name"]].dates.push(data.time);
+                }
+            }
+            else{
+                if(self.items[data.options.geocode]==null){
+                    self.items[data.options.geocode] = {
+                        title: data.options.q,
+                        id: hists[i].id,
+                        dates: [data.time]
+                    };
+                    var geo = data.options.geocode.split(",");
+                    self.getGeoCode(geo[0],geo[1],data.options.geocode);
+                }
+                else{
+                    self.items[data.options.geocode].dates.push(data.time);
+                }
+            }
         }
     };
 
     self.getText = function(query){
         var data = JSON.parse(query);
-        console.log(query);
         var builder = "";
         if(data.type == "t"){
-            builder += "Hashtag - Content Search \n";
-            builder += "Content: "+data.options.q+"\n";
+            //builder += "Hashtag - Content Search \n";
+            builder += "<strong>"+data.options.q+"</strong>\n";
             var geo = data.options.geocode.split(",");
-            builder += "Location: "+geo[0]+", "+geo[1]+"\n";
-            builder += "<span id='gloc"+data.time+"'></span><br>";
+            //builder += "Location: "+geo[0]+", "+geo[1]+"\n";
+            builder += "<span id='gloc"+data.time+"'></span><hr>";
             self.getGeoCode(geo[0],geo[1],"#gloc"+data.time);
         }
         else if(data.type == "u"){
@@ -774,22 +788,28 @@ app.controller("HistoryListController",function($scope,$http,params){
         var qry = JSON.parse(hists.filter(function(e){return e.id==id;})[0].query);
         if(qry.type == "t") {
             var geo = qry.options.geocode.split(",");
-            self.master.openTwitterModal(qry.options.q, "hashtag", geo[0]+","+geo[1]);
+            self.openTwitterModal(qry.options.q, "hashtag", geo[0]+","+geo[1]);
         }
         else if(qry.type == "u")
-            self.master.openTwitterModal(qry.options["screen_name"],"user");
-        self.$dismiss();
+            self.openTwitterModal(qry.options["screen_name"],"user");
+        //self.$dismiss();
     };
 
     self.getGeoCode = function(lat,lng,elem){
         var url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+lat+","+lng;
         $http({url:url, method:"get"}).success(function(data){
             if(data.results[0] != null)
-                angular.element(elem)[0].innerHTML = data.results[0]["formatted_address"];
+                self.items[elem].geoloc = data.results[0]["formatted_address"];
         });
     };
 
-    self.init();
+    self.shared.updateHistory = function(hl){
+        self.toggleHistory();
+        self.hlist = hl;
+        self.createItems();
+    };
+
+    self.createItems();
 });
 
 // Static utils functions

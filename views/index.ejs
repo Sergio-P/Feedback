@@ -36,7 +36,7 @@
                         <i class="fa fa-sliders"></i>
                     </button>
                     <button class="btn btn-default" ng-show="twitterEnabled" ng-click="openTwitterModal()"><i class="fa fa-twitter"></i></button>
-                    <button class="btn btn-default" ng-show="twitterEnabled" ng-click="getHistorySearches()"><i class="fa fa-clock-o"></i></button>
+                    <button class="btn btn-default" ng-show="twitterEnabled" ng-click="getHistorySearches()" ng-class="{'active':historyOpened}"><i class="fa fa-clock-o"></i></button>
                     <button class="btn btn-default" ng-click="simpleSearch()"><i class="fa fa-search"></i></button>
                 </span>
             </div>
@@ -57,7 +57,23 @@
     </div>
 
     <div class="row abs-full-height">
-        <div class="col-sm-4 full-height scrollable no-padding-right">
+        <div class="col-sm-2 full-height scrollable no-padding-right simple-padding-left" ng-show="historyOpened">
+            <h4><i class="fa fa-clock-o"></i> Search History</h4>
+            <div ng-controller="HistoryListController">
+                <ul class="list-group">
+                    <li ng-repeat="item in items" class="list-group-item">
+                        <strong>{{item.title}}</strong><br>
+                        <span>{{item.geoloc}}</span>
+                        Searches:
+                        <ul class="simple-padding-left">
+                            <li ng-repeat="d in item.dates">{{d | date:'d-MM-yyyy, HH:mm'}}</li>
+                        </ul>
+                        <a class="btn btn-default btn-sm" ng-click="resendSearch(item.id)">Re-send</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="full-height scrollable no-padding-right" ng-class="{'col-sm-3':historyOpened, 'col-sm-4':!historyOpened}">
             <div class="simple-padding" ng-controller="NewFeedController">
                 <span class="label label-primary over-right" ng-class="{'label-danger':newFeed.com.length>140}">{{newFeed.com.length}}</span>
                 <textarea id="new-feed-box" class="form-control" rows="3" ng-model="newFeed.com"></textarea>
@@ -84,7 +100,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-8 full-height">
+        <div class="full-height" ng-class="{'col-sm-7':historyOpened, 'col-sm-8':!historyOpened}">
             <div class="mid-height" ng-controller="MapController">
                 <div id="map"></div>
                 <a class="map-btn absolute-right" ng-click="setMapDrawingMode(true)">

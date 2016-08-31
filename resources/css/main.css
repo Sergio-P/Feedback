@@ -1,6 +1,7 @@
 *{
     padding: 0;
     margin: 0;
+    /*transition: width 0.4s;*/
 }
 
 html{
@@ -248,4 +249,8 @@ a.map-btn {
 
 .respect-line-breaks{
     white-space: pre-wrap;
+}
+
+.simple-padding-left{
+    padding-left: 24px;
 }
