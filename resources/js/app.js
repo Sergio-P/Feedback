@@ -375,7 +375,7 @@ app.controller("MapController",function($scope){
             });
             google.maps.event.addListener(mark,"click",(function(a,b){return function(){
                 self.highlightUnique(a);
-                self.map.moveTo(wktToLatLng(b));
+                self.map.panTo(wktToLatLng(b));
                 $scope.$apply();
             }})(fid,fgeom));
             self.feedsMarkers[fid] = mark;
@@ -393,6 +393,16 @@ app.controller("MapController",function($scope){
                 $scope.$apply();
             }})(vals,mark));
             self.fuzzyMarkers[wkt] = mark;
+        }
+    };
+
+    self.shared.mapPanTo = function(loc){
+        if(typeof loc == "string") {
+            var wkt = "POINT(" + loc.split(",")[0] + " " + loc.split(",")[1] + ")";
+            self.map.panTo(wktToLatLng(wkt));
+        }
+        else{
+            self.map.panTo(loc.getPosition());
         }
     };
 
@@ -689,6 +699,7 @@ app.controller("TwitterController",function($scope,$http,params){
                 self.master.rawfeeds = self.master.rawfeeds.concat(data);
                 self.master.restoreFeeds();
                 self.waiting = false;
+                self.master.shared.mapPanTo(self.location);
                 self.$close();
             });
         }
