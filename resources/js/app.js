@@ -411,7 +411,7 @@ app.controller("MapController",function($scope){
 
     self.shared.mapPanTo = function(loc){
         if(typeof loc == "string") {
-            var wkt = "POINT(" + loc.split(",")[0] + " " + loc.split(",")[1] + ")";
+            var wkt = "POINT(" + loc.split(",")[1] + " " + loc.split(",")[0] + ")";
             self.map.panTo(wktToLatLng(wkt));
         }
         else{
@@ -727,6 +727,7 @@ app.controller("TwitterController",function($scope,$http,params){
                 self.master.restoreFeeds();
                 self.waiting = false;
                 self.master.shared.mapPanTo(self.location);
+                self.master.getHistorySearches();
                 self.$close();
             });
         }
@@ -742,6 +743,7 @@ app.controller("TwitterController",function($scope,$http,params){
                 self.master.rawfeeds = self.master.rawfeeds.concat(data);
                 self.master.restoreFeeds();
                 self.waiting = false;
+                self.master.getHistorySearches();
                 self.$close();
             });
         }
