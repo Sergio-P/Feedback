@@ -61,7 +61,7 @@
             <h4><i class="fa fa-clock-o"></i> Search History</h4>
             <div ng-controller="HistoryListController">
                 <ul class="list-group">
-                    <li ng-repeat="item in items" class="list-group-item">
+                    <li ng-repeat="item in orderHistory(items)" class="list-group-item">
                         <strong>{{item.title}}</strong><br>
                         <span>{{item.geoloc}}</span>
                         Searches:

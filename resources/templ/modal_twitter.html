@@ -24,8 +24,8 @@
     <div class="row" ng-show="searchType=='hashtag'">
         <div class="col-xs-4">Location:</div>
         <div class="col-xs-8">
-            <span class="label label-success" ng-show="location!=null">Using Marker location</span>
-            <span class="label label-danger" ng-show="location==null">No marker location found</span>
+            <span class="label label-success" ng-show="locm">Using Marker location</span>
+            <span class="label label-warning" ng-show="!locm">Using Map center</span>
         </div>
     </div>
     <br/>

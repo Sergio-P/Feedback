@@ -199,6 +199,19 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         self.historyOpened = !self.historyOpened;
     };
 
+    self.orderHistory = function(hobj){
+        console.log(hobj);
+        var arr = [];
+        for(var k in hobj){
+            arr.push(hobj[k]);
+        }
+        return arr.sort(function(a,b){
+            if(a.dates == null) return -1;
+            if(b.dates == null) return 1;
+            return - parseInt(a.dates[a.dates.length-1]) + parseInt(b.dates[b.dates.length-1]);
+        });
+    };
+
     var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
 
     socket.on("upd",function(data){
@@ -404,6 +417,15 @@ app.controller("MapController",function($scope){
         else{
             self.map.panTo(loc.getPosition());
         }
+    };
+
+    self.shared.getMapCenter = function(){
+        var c = self.map.getCenter();
+        return {
+            getPosition: function() {
+                return c;
+            }
+        };
     };
 
     self.removeAllMarkers = function(){
@@ -667,12 +689,17 @@ app.controller("AdvancedSearchController", function ($scope, $http){
 app.controller("TwitterController",function($scope,$http,params){
     var self = $scope;
 
+    self.master = params.master;
     if(params.deftext!=null)
         self.twText = params.deftext;
     else
         self.twText = "";
     self.location = params.loc;
-    self.master = params.master;
+    self.locm = true;
+    if(self.location==null) {
+        self.location = self.master.shared.getMapCenter();
+        self.locm = false;
+    }
     if(params.deftype != null)
         self.searchType = params.deftype;
     else
@@ -685,7 +712,7 @@ app.controller("TwitterController",function($scope,$http,params){
     self.trends = [];
 
     self.twitterRequest = function(){
-        if(self.searchType=="hashtag" && self.secret!="" && self.location!=null){
+        if(self.searchType=="hashtag" && self.secret!=""){
             if(self.twText=="") self.twText = "#";
             var postdata = {
                 text: self.twText,
