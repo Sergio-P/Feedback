@@ -444,6 +444,7 @@ app.controller("MapController",function($scope){
             self.fuzzyMarkers[i].setIcon("gpx/fuzzy_red.png");
         }
         fuzmark.setIcon("gpx/fuzzy_green.png");
+        self.map.panTo(fuzmark.getPosition());
     };
 
     self.setMapDrawingMode = function(mode){
@@ -744,6 +745,7 @@ app.controller("TwitterController",function($scope,$http,params){
                 self.master.restoreFeeds();
                 self.waiting = false;
                 self.master.getHistorySearches();
+                self.master.toggleHistory();
                 self.$close();
             });
         }
