@@ -843,6 +843,7 @@ app.controller("HistoryListController",function($scope,$http){
         $http({url:url, method:"get"}).success(function(data){
             if(data.results[0] != null)
                 self.items[elem].geoloc = data.results[0]["formatted_address"];
+            self.items[elem].wkt = "POINT("+lng+" "+lat+")";
         });
     };
 
