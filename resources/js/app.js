@@ -146,8 +146,8 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         self.highlights = [];
         for (var i = 0; i < self.feeds.length; i++) {
             if (self.feeds[i].prettyText.toLowerCase().includes(lcont) ||
-                    self.usersIdHash[self.feeds[i].author].fullname.toLowerCase().includes(lcont) ||
-                    self.feeds[i].extra.toLowerCase().includes(lcont)){
+                self.usersIdHash[self.feeds[i].author].fullname.toLowerCase().includes(lcont) ||
+                self.feeds[i].extra.toLowerCase().includes(lcont)){
                 self.highlights.push(self.feeds[i].id);
             }
         }
@@ -168,8 +168,23 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         self.shared.highlightNodes();
         self.shared.highlightMarkers();
         setTimeout(function(){
-            $(".feed-box.highlight:first")[0].scrollIntoView();
+            let c = $(".feed-box.highlight:first")[0];
+            if(c!=null) c.scrollIntoView();
         },100);
+    };
+
+    self.countFeedsContent = function(content) {
+        var lcont = (""+content).toLowerCase();
+        console.log(lcont);
+        let count = 0;
+        for (var i = 0; i < self.feeds.length; i++) {
+            if (self.feeds[i].prettyText.toLowerCase().includes(lcont) ||
+                self.usersIdHash[self.feeds[i].author].fullname.toLowerCase().includes(lcont) ||
+                self.feeds[i].extra.toLowerCase().includes(lcont)){
+                count++;
+            }
+        }
+        return count;
     };
 
     self.openTwitterModal = function(deftxt, deftype, defloc){
@@ -796,13 +811,13 @@ app.controller("HistoryListController",function($scope,$http){
                     self.items[data.options.geocode] = {
                         title: data.options.q,
                         id: hists[i].id,
-                        dates: [data.time]
+                        dates: [{date: data.time, cant: self.countFeedsContent(data.time)}]
                     };
                     var geo = data.options.geocode.split(",");
                     self.getGeoCode(geo[0],geo[1],data.options.geocode);
                 }
                 else{
-                    self.items[data.options.geocode].dates.push(data.time);
+                    self.items[data.options.geocode].dates.push({date: data.time, cant: self.countFeedsContent(data.time)});
                 }
             }
         }

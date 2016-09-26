@@ -66,7 +66,7 @@
                         <span>{{item.geoloc}}</span>
                         Searches:
                         <ul class="simple-padding-left">
-                            <li ng-repeat="d in item.dates"><a class="green" ng-click="highlightContent(d)">{{d | date:'d-MM-yyyy, HH:mm'}}</a></li>
+                            <li ng-repeat="d in item.dates"><a class="green" ng-click="highlightContent(d.date)">{{d.date | date:'d-MM-yyyy, HH:mm'}}</a> ({{d.cant}})</li>
                         </ul>
                         <a class="btn btn-default btn-sm" ng-click="resendSearch(item.id)">Re-send</a>
                     </li>
