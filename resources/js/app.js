@@ -836,11 +836,11 @@ app.controller("HistoryListController",function($scope,$http){
                     self.items[data.options["screen_name"]] = {
                         title: data.options["screen_name"],
                         id: hists[i].id,
-                        dates: [data.time]
+                        dates: [{date: data.time, cant: self.countFeedsContent(data.time)}]
                     };
                 }
                 else{
-                    self.items[data.options["screen_name"]].dates.push(data.time);
+                    self.items[data.options["screen_name"]].dates.push({date: data.time, cant: self.countFeedsContent(data.time)});
                 }
             }
             else{
