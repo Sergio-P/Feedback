@@ -254,3 +254,11 @@ a.map-btn {
 .simple-padding-left{
     padding-left: 24px;
 }
+
+#pac-input{
+    margin: 8px 4px;
+    padding: 4px;
+    font-size: 120%;
+    border: none;
+    box-shadow: #999 1px 1px 4px;
+}

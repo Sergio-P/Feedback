@@ -383,6 +383,7 @@ app.controller("MapController",function($scope){
         google.maps.event.addListener(self.drawingManager,'overlaycomplete',self.overlayHandler);
         self.setLoctionMapCenter();
         self.createLocationButton();
+        self.initSearchBox();
     };
 
     self.overlayHandler = function(event){
@@ -456,12 +457,13 @@ app.controller("MapController",function($scope){
         self.fuzzyMarkers = {};
     };
 
-    self.highlightFuzzy = function(fuzmark){
+    self.highlightFuzzy = function(fuzmark,pan){
         for(var i in self.fuzzyMarkers){
             self.fuzzyMarkers[i].setIcon("gpx/fuzzy_red.png");
         }
         fuzmark.setIcon("gpx/fuzzy_green.png");
-        self.map.panTo(fuzmark.getPosition());
+        if(pan==null || pan)
+            self.map.panTo(fuzmark.getPosition());
     };
 
     self.setMapDrawingMode = function(mode){
@@ -486,18 +488,18 @@ app.controller("MapController",function($scope){
             else{
                 self.feedsMarkers[idx].setIcon("gpx/mredfx.png");
             }
-	}
-	for(var i in self.highlights){
+        }
+        for(var i in self.highlights){
             var idx = self.highlights[i];
-	    var fd = self.feeds.filter(function(f){ return f.id==idx;})[0];
-	    console.log(fd);
+            var fd = self.feeds.filter(function(f){ return f.id==idx;})[0];
+            //console.log(fd);
             if(fd != null && fd.extra!=null){
                 var coords = fd.extra.split("|")[2];
                 fuzzhgl[coords] = true;
             }
         }
         for(var wkt in fuzzhgl){
-            self.highlightFuzzy(self.fuzzyMarkers[wkt]);
+            self.highlightFuzzy(self.fuzzyMarkers[wkt],false);
         }
     };
 
@@ -549,6 +551,43 @@ app.controller("MapController",function($scope){
 
         controlDiv.index = 1;
         self.map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlDiv);
+    };
+
+    self.initSearchBox = () => {
+        let input = document.getElementById('pac-input');
+        let searchBox = new google.maps.places.SearchBox(input);
+        self.map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        self.map.addListener('bounds_changed', function() {
+            searchBox.setBounds(self.map.getBounds());
+        });
+
+        let markers = [];
+        searchBox.addListener('places_changed', function() {
+            let places = searchBox.getPlaces();
+            if (places.length == 0) return;
+
+            markers.forEach(function(marker) {
+                marker.setMap(null);
+            });
+            markers = [];
+
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function(place) {
+                markers.push(new google.maps.Marker({
+                    map: self.map,
+                    title: place.name,
+                    position: place.geometry.location
+                }));
+                if(place.geometry.viewport){
+                    bounds.union(place.geometry.viewport);
+                }
+                else {
+                    bounds.extend(place.geometry.location);
+                }
+            });
+            self.map.fitBounds(bounds);
+        });
     };
 
     self.init();
