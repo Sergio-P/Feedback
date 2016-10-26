@@ -223,7 +223,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         return arr.sort(function(a,b){
             if(a.dates == null) return -1;
             if(b.dates == null) return 1;
-            return - parseInt(a.dates[a.dates.length-1]) + parseInt(b.dates[b.dates.length-1]);
+            return parseInt(a.dates[a.dates.length-1]) - parseInt(b.dates[b.dates.length-1]);
         });
     };
 
