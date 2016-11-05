@@ -298,18 +298,20 @@ app.controller("GraphController", function($scope){
                 cat: {
                     shape: 'circle'
                 }
+            },
+            physics: {
+                minVelocity: 0.5,
+                stabilization: {
+                    enabled : true,
+                    iterations: 200,
+                    fit: true,
+                    onlyDynamicEdges: false,
+                    updateInterval: 50
+                }
             }
         };
 
         self.network = new vis.Network(container, data, options);
-        self.network.physics.stabilization = {
-            enabled : true,
-            iterations: 200,
-            fit: true,
-            onlyDynamicEdges: false,
-            updateInterval: 50
-        };
-        self.network.physics.minVelocity = 0.5;
         self.network.on("click",function(params){
             if(params.nodes.length<1){
                 self.detailBox.show = false;
