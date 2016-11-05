@@ -66,6 +66,13 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         });
     };
 
+    self.getUsername = (feed) => {
+        let name = usersIdHash[feed.author].fullname;
+        if(name != "Twitter Bot")
+            return name;
+        return feed.extra.split("|")[1];
+    };
+
     self.getPrefixedParts = function(text){
         var parts = [];
         var words = text.split(" ");
@@ -223,7 +230,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         return arr.sort(function(a,b){
             if(a.dates == null) return -1;
             if(b.dates == null) return 1;
-            return parseInt(a.dates[a.dates.length-1].date) - parseInt(b.dates[b.dates.length-1].date);
+            return - parseInt(a.dates[a.dates.length-1].date) + parseInt(b.dates[b.dates.length-1].date);
         });
     };
 
@@ -480,10 +487,12 @@ app.controller("MapController",function($scope){
     };
 
     self.shared.highlightMarkers = function(){
+        let limits = new google.maps.LatLngBounds();
         var fuzzhgl = {};
         for(var idx in self.feedsMarkers){
             if(self.highlights.indexOf(parseInt(idx))!=-1){
                 self.feedsMarkers[idx].setIcon("gpx/mgreenfx.png");
+                limits.extend(self.feedsMarkers[idx].position);
             }
             else{
                 self.feedsMarkers[idx].setIcon("gpx/mredfx.png");
@@ -500,7 +509,9 @@ app.controller("MapController",function($scope){
         }
         for(var wkt in fuzzhgl){
             self.highlightFuzzy(self.fuzzyMarkers[wkt],false);
+            limits.extend(self.fuzzyMarkers[wkt].position);
         }
+        self.map.fitBounds(limits);
     };
 
     self.shared.getMapBounds = function(){
