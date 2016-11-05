@@ -67,7 +67,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     };
 
     self.getUsername = (feed) => {
-        let name = usersIdHash[feed.author].fullname;
+        let name = self.usersIdHash[feed.author].fullname;
         if(name != "Twitter Bot")
             return name;
         return feed.extra.split("|")[1];
@@ -401,7 +401,9 @@ app.controller("MapController",function($scope){
     };
 
     self.updateMap = function(){
-        self.removeAllMarkers();
+        let empty = Object.keys(self.fuzzyMarkers).length == 0 && Object.keys(self.feedsMarkers).length == 0;
+        if(!empty)
+            self.removeAllMarkers();
         for(var i=0; i<self.feeds.length; i++){
             var fgeom = self.feeds[i].geom;
             var fid = self.feeds[i].id;
@@ -432,6 +434,8 @@ app.controller("MapController",function($scope){
             }})(vals,mark));
             self.fuzzyMarkers[wkt] = mark;
         }
+        if(empty)
+            self.setExtentMapCenter();
     };
 
     self.shared.mapPanTo = function(loc){
@@ -529,6 +533,17 @@ app.controller("MapController",function($scope){
             var geolocation = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
             self.map.setCenter(geolocation);
         });
+    };
+
+    self.setExtentMapCenter = () => {
+        let limits = new google.maps.LatLngBounds();
+        for(var idx in self.feedsMarkers){
+            limits.extend(self.feedsMarkers[idx].position);
+        }
+        for(var key in self.fuzzyMarkers){
+            limits.extend(self.fuzzyMarkers[key].position);
+        }
+        self.map.fitBounds(limits);
     };
 
     self.createLocationButton = () => {
