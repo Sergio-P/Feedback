@@ -506,6 +506,7 @@ app.controller("MapController",function($scope){
         for(var idx in self.feedsMarkers){
             if(self.highlights.indexOf(parseInt(idx))!=-1){
                 self.feedsMarkers[idx].setIcon("gpx/mgreenfx.png");
+                self.feedsMarkers[idx].setZIndex(1000);
                 limits.extend(self.feedsMarkers[idx].position);
             }
             else{
