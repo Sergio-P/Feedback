@@ -170,9 +170,9 @@ app.post("/add-ses-users", function(req,res){
 
 app.post("/history-list", rpg.multiSQL({
     dbcon: conString,
-    sql: "select id, query from history where uid = $1 and sesid = $2",
-    sesReqData: ["uid","ses"],
-    sqlParams: [rpg.sqlParam("ses","uid"),rpg.sqlParam("ses","ses")]
+    sql: "select id, query from history where sesid = $1",
+    sesReqData: ["ses"],
+    sqlParams: [rpg.sqlParam("ses","ses")]
 }));
 
 app.post("/twitter-feeds", twAdpt.tweetsAsFeeds(socket));

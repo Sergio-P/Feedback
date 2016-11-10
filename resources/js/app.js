@@ -106,7 +106,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
                 self.addToTagMap(part.text,id);
             }
             else
-                feedf += '<a class="green" ng-click="openProfile(\''+part.text+'\')">';
+                feedf += '<a class="green">';
             feedf += part.orgnText+"</a>";
             k = part.to;
         }
