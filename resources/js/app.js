@@ -526,7 +526,7 @@ app.controller("MapController",function($scope){
             self.highlightFuzzy(self.fuzzyMarkers[wkt],false);
             limits.extend(self.fuzzyMarkers[wkt].position);
         }
-        self.map.fitBounds(limits);
+        //self.map.fitBounds(limits);
     };
 
     self.shared.getMapBounds = function(){
@@ -554,7 +554,7 @@ app.controller("MapController",function($scope){
         for(var key in self.fuzzyMarkers){
             limits.extend(self.fuzzyMarkers[key].position);
         }
-        self.map.fitBounds(limits);
+        //self.map.fitBounds(limits);
     };
 
     self.createLocationButton = () => {
@@ -623,7 +623,7 @@ app.controller("MapController",function($scope){
                     bounds.extend(place.geometry.location);
                 }
             });
-            self.map.fitBounds(bounds);
+            //self.map.fitBounds(bounds);
         });
     };
 
