@@ -304,11 +304,10 @@ app.controller("GraphController", function($scope){
                 minVelocity: 2,
                 stabilization: {
                     enabled : true,
-                    iterations: 1,
+                    iterations: 30,
                     fit: true,
                     onlyDynamicEdges: false
-                },
-                timestep: 1
+                }
             }
         };
 
@@ -1019,16 +1018,15 @@ var wktInBounds = function(wktp,bounds){
 
 var lematize = function(word){
     var w = word.toLowerCase();
-    var punct = ",.;:!?";
+    var alphabet = "0123456789qwertyuiopasdfghjklzxcvbnm_#QWERTYUIOPASDFGHJKLZXCVBNM";
     var tildes = {"á":"a","é":"e","í":"i","ó":"o","ú":"u"};
     var n = w.length;
-    for(var i=0; i<punct.length; i++){
-        var k = w.indexOf(punct[i]);
-        if(k!=-1 && k<n) n=k;
-    }
-    w = w.substr(0,n);
     w = w.replace(/[^\w ]/g, function(char){
-        return tildes[char] || char;
+        if(alphabet.indexOf(char) != -1)
+            return char;
+        if(tildes[char])
+            return tildes[char];
+        return "";
     });
     return w;
 };
