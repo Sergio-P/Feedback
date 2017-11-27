@@ -21,7 +21,7 @@ module.exports.tweetsAsFeeds = function(socket){
         }
         var twOptions = {
             q: data["text"],
-            count: 15,
+            count: 50,
             geocode: data["geo"]
         };
         var inow = ""+(+Date.now());
@@ -92,7 +92,7 @@ module.exports.userTweets = function(req, res){
 /**
  * Converts a tweet object to a feed object
  * @param gc geocode to be used as extra
- * @return The function to wrap the feed object that represent the tweet
+ * @return Function - The function to wrap the feed object that represent the tweet
  */
 var adapterTweetToFeed = function(gc,inow){
     var ss = "";

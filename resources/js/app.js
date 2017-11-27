@@ -222,7 +222,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     };
 
     self.orderHistory = function(hobj){
-        console.log(hobj);
+        //console.log(hobj);
         var arr = [];
         for(var k in hobj){
             arr.push(hobj[k]);
@@ -235,6 +235,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     };
 
     var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
+    //var socket = io("localhost:8502");
 
     socket.on("upd",function(data){
 	    console.log("SOCKET");
@@ -300,14 +301,14 @@ app.controller("GraphController", function($scope){
                 }
             },
             physics: {
-                minVelocity: 0.5,
+                minVelocity: 2,
                 stabilization: {
                     enabled : true,
-                    iterations: 200,
+                    iterations: 1,
                     fit: true,
-                    onlyDynamicEdges: false,
-                    updateInterval: 50
-                }
+                    onlyDynamicEdges: false
+                },
+                timestep: 1
             }
         };
 
@@ -1018,7 +1019,7 @@ var wktInBounds = function(wktp,bounds){
 
 var lematize = function(word){
     var w = word.toLowerCase();
-    var punct = ",.;:";
+    var punct = ",.;:!?";
     var tildes = {"á":"a","é":"e","í":"i","ó":"o","ú":"u"};
     var n = w.length;
     for(var i=0; i<punct.length; i++){
