@@ -524,9 +524,10 @@ app.controller("MapController",function($scope){
         }
         for(var wkt in fuzzhgl){
             self.highlightFuzzy(self.fuzzyMarkers[wkt],false);
-            limits.extend(self.fuzzyMarkers[wkt].position);
+            if(self.fuzzyMarkers[wkt].position != null)
+                limits.extend(self.fuzzyMarkers[wkt].position);
         }
-        //self.map.fitBounds(limits);
+        self.map.fitBounds(limits);
     };
 
     self.shared.getMapBounds = function(){
@@ -549,12 +550,14 @@ app.controller("MapController",function($scope){
     self.setExtentMapCenter = () => {
         let limits = new google.maps.LatLngBounds();
         for(var idx in self.feedsMarkers){
-            limits.extend(self.feedsMarkers[idx].position);
+            if(self.feedsMarkers[idx].position != null)
+                limits.extend(self.feedsMarkers[idx].position);
         }
         for(var key in self.fuzzyMarkers){
-            limits.extend(self.fuzzyMarkers[key].position);
+            if(self.fuzzyMarkers[key].position != null)
+                limits.extend(self.fuzzyMarkers[key].position);
         }
-        //self.map.fitBounds(limits);
+        self.map.fitBounds(limits);
     };
 
     self.createLocationButton = () => {
