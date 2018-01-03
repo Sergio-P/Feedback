@@ -407,6 +407,7 @@ app.controller("MapController",function($scope){
         google.maps.event.addListener(self.drawingManager,'overlaycomplete',self.overlayHandler);
         self.setLoctionMapCenter();
         self.createLocationButton();
+        self.createFitDataButton();
         self.initSearchBox();
     };
 
@@ -573,13 +574,16 @@ app.controller("MapController",function($scope){
     self.setExtentMapCenter = () => {
         let limits = new google.maps.LatLngBounds();
         for(var idx in self.feedsMarkers){
-            if(self.feedsMarkers[idx].position != null)
-                limits.extend(self.feedsMarkers[idx].position);
+            var p = self.feedsMarkers[idx].position;
+            if(p != null && !isNaN(p.lat()) && !isNaN(p.lng()))
+                limits.extend(p);
         }
         for(var key in self.fuzzyMarkers){
-            if(self.fuzzyMarkers[key].position != null)
-                limits.extend(self.fuzzyMarkers[key].position);
+            var p = self.fuzzyMarkers[key].position;
+            if(p != null && !isNaN(p.lat()) && !isNaN(p.lng()))
+                limits.extend(p);
         }
+        //console.log(limits);
         self.map.fitBounds(limits);
     };
 
@@ -611,6 +615,39 @@ app.controller("MapController",function($scope){
         firstChild.appendChild(secondChild);
 
         firstChild.addEventListener('click', self.setLoctionMapCenter);
+
+        controlDiv.index = 1;
+        self.map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlDiv);
+    };
+
+    self.createFitDataButton = () => {
+        var controlDiv = document.createElement('div');
+
+        var firstChild = document.createElement('button');
+        firstChild.style.backgroundColor = '#fff';
+        firstChild.style.border = 'none';
+        firstChild.style.outline = 'none';
+        firstChild.style.width = '28px';
+        firstChild.style.height = '28px';
+        firstChild.style.borderRadius = '2px';
+        firstChild.style.boxShadow = '0 1px 4px rgba(0,0,0,0.3)';
+        firstChild.style.cursor = 'pointer';
+        firstChild.style.marginRight = '10px';
+        firstChild.style.padding = '0';
+        firstChild.title = 'Your Location';
+        controlDiv.appendChild(firstChild);
+
+        var secondChild = document.createElement('div');
+        secondChild.style.margin = '5px';
+        secondChild.style.width = '18px';
+        secondChild.style.height = '18px';
+        secondChild.style.backgroundImage = 'url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAMAAADW3miqAAAAflBMVEUAAABmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmbXo4A1AAAAKXRSTlMAAQIEBQYJDhATFCQuMTg9QkxOUVZoaXR1i52wt7m+xczT1dni6PH1/dMbQjwAAAC6SURBVDjLxZPrDoIwDEaLMhWl3pj3+w3t+7+guCJzYcOZEDx/tqQn2Ze2A6gNUkhrDbkofCUBkpwAsBSFM7rubVyIwvCH5zwkxDMtcJQYTFjqYKYhBtl1SzHEZtz0o0N8snSSBUuntNZRun7Sva8QlVJOUik9Xq28fZFUpvnfpVQP/+iUymMpSW3u3oGm6oysUs6GBjqaW1rpOe+ckkEh8dL1WBqauzd+L13j/85LqiuTULSsUsBFaJgnSXxJmD/s3dAAAAAASUVORK5CYII=)';
+        secondChild.style.backgroundSize = '18px 18px';
+        secondChild.style.backgroundPosition = '0 0';
+        secondChild.style.backgroundRepeat = 'no-repeat';
+        firstChild.appendChild(secondChild);
+
+        firstChild.addEventListener('click', self.setExtentMapCenter);
 
         controlDiv.index = 1;
         self.map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(controlDiv);

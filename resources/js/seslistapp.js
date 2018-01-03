@@ -14,7 +14,7 @@ app.controller("SesListController",function($scope, $http, $uibModal){
 
     self.updateList = function() {
         $http({url: "seslist", method: "post"}).success(function (data) {
-            self.sessions = data;
+            self.sessions = data.reverse();
         });
     };
 

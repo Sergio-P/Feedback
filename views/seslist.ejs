@@ -35,8 +35,9 @@
     <br/>
     <hr/>
     <br/>
+    <input class="form-control" ng-model="sesSearch" ng-show="!newsesopen" placeholder="Search...">
     <div class="list-group">
-        <a href="./set-session?ses={{ses.id}}" class="list-group-item" ng-repeat="ses in sessions">
+        <a href="./set-session?ses={{ses.id}}" class="list-group-item" ng-repeat="ses in sessions | filter:sesSearch">
             <button class="btn btn-default pull-right" ng-click="openUsers(ses.id,$event)">
                 <i class="fa fa-users"></i> Users
             </button>
