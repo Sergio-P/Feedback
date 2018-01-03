@@ -3,6 +3,7 @@ var pg = require('pg');
 var twConfig = require("./passwords.js")("twConfig");
 var twSecret = require("./passwords.js")("twSecret");
 var conString = require("./passwords.js")("conString");
+var twCount = require("./passwords")("twCount");
 
 var twSocket = new Twit(twConfig);
 var id_tb = 3; // ID of twitter bot user
@@ -21,7 +22,7 @@ module.exports.tweetsAsFeeds = function(socket){
         }
         var twOptions = {
             q: data["text"],
-            count: 50,
+            count: twCount,
             geocode: data["geo"]
         };
         var inow = ""+(+Date.now());
@@ -69,7 +70,7 @@ module.exports.userTweets = function(req, res){
     }
     var twOptions = {
         "screen_name": data["user"],
-        count: 15,
+        count: twCount,
         "include_rts": false
     };
     var inow = ""+(+Date.now());
