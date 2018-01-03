@@ -32,6 +32,11 @@ module.exports.tweetsAsFeeds = function(socket){
                 return;
             }
             console.log(data);
+            if(data.statuses == null){
+                console.error("NO STATUSES ATTRIBUTE FOUND!");
+                res.end("[]");
+                return;
+            }
             var arr = data.statuses.map(adapterTweetToFeed(twOptions.geocode,inow));
             for(var i=0; i<arr.length; i++){
                 addDBTweet(arr[i], req.session.ses);

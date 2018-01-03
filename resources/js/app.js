@@ -234,8 +234,8 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         });
     };
 
-    var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
-    //var socket = io("localhost:8502");
+    //var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
+    var socket = io("localhost:8502");
 
     socket.on("upd",function(data){
 	    console.log("SOCKET");
@@ -374,14 +374,14 @@ app.controller("GraphController", function($scope){
 
 app.controller("MapController",function($scope){
     var self = $scope;
-    self.mapProp = { center: {lat: -33, lng: -72 }, zoom: 8 };
+    //self.mapProp = { center: {lat: -33, lng: -72 }, zoom: 12 };
     self.feedsMarkers = {};
     self.fuzzyMarkers = {};
 
     self.init = function(){
         self.map = new google.maps.Map($("#map")[0],{
             center: new google.maps.LatLng(-33, -70),
-            zoom: 15
+            zoom: 1
         });
 
         self.drawingManager = new google.maps.drawing.DrawingManager({
@@ -544,6 +544,22 @@ app.controller("MapController",function($scope){
         navigator.geolocation.getCurrentPosition(function (pos) {
             var geolocation = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
             self.map.setCenter(geolocation);
+            self.map.setZoom(16);
+            if(window.markgeoloc==null) {
+                window.markgeoloc = new google.maps.Marker({
+                    position: geolocation,
+                    map: self.map,
+                    icon: {
+                        url: "gpx/lightbluedot.png",
+                        size: new google.maps.Size(18, 18),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(9, 9)
+                    }
+                });
+            }
+            else{
+                window.markgeoloc.setPosition(geolocation);
+            }
         });
     };
 
