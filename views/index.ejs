@@ -24,10 +24,11 @@
 <div class="main-container" ng-controller="FeedbackController">
 
     <div class="row top-bar">
-        <div class="col-xs-3">
+        <div class="col-xs-4">
             <img src="gpx/logo.png" alt="LOGO" class="logo"/>
+            <strong class="session-title" ng-bind="sesinfo.name"></strong>
         </div>
-        <div class="col-xs-7">
+        <div class="col-xs-6">
             <div class="input-group" ng-controller="SearchController">
                 <input type="text" class="form-control" ng-model="simpleSearchBox" ng-keypress="($event.which === 13)?simpleSearch():0"/>
                 <span class="input-group-btn">

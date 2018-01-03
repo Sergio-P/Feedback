@@ -119,7 +119,9 @@ hr{
 }
 
 .logo{
+    display: inline-block;
     margin-left: 30px;
+    margin-right: 16px;
 }
 
 .scrollable{
@@ -262,3 +264,14 @@ a.map-btn {
     border: none;
     box-shadow: #999 1px 1px 4px;
 }
+
+.session-title{
+    max-width: calc(100% - 200px);
+    display: inline-block;
+    color: white;
+    font-size: 120%;
+    padding-top: 6px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+

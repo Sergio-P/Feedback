@@ -234,6 +234,12 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         });
     };
 
+    self.getSesInfo = function(){
+        $http.post("get-ses-info").success((data) => {
+            self.sesinfo = data;
+        });
+    };
+
     //var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
     var socket = io("localhost:8502");
 
@@ -244,6 +250,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
 
     self.updateFeeds();
     self.updateUsers();
+    self.getSesInfo();
 
 });
 

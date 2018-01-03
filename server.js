@@ -179,6 +179,13 @@ app.post("/twitter-feeds", twAdpt.tweetsAsFeeds(socket));
 app.post("/twitter-trends", twAdpt.trendings);
 app.post("/twitter-user", twAdpt.userTweets);
 
+app.post("/get-ses-info", rpg.singleSQL({
+    dbcon: conString,
+    sql: "select id, name, descr from sessions where id = $1",
+    sesReqData: ["ses"],
+    sqlParams: [rpg.sqlParam("ses","ses")]
+}));
+
 function addSesUser(uid,ses){
     var sql = "insert into sesusers(sesid,uid) values ($1,$2)";
     var db = new pg.Client(conString);
