@@ -149,12 +149,12 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
 
     self.highlightContent = function(content) {
         var lcont = (""+content).toLowerCase();
-        console.log(lcont);
+        //console.log(lcont);
         self.highlights = [];
         for (var i = 0; i < self.feeds.length; i++) {
-            if (self.feeds[i].prettyText.toLowerCase().includes(lcont) ||
-                self.usersIdHash[self.feeds[i].author].fullname.toLowerCase().includes(lcont) ||
-                self.feeds[i].extra.toLowerCase().includes(lcont)){
+            if (isSubstring(lcont, self.feeds[i].prettyText) ||
+                isSubstring(lcont, self.usersIdHash[self.feeds[i].author].fullname) ||
+                isSubstring(lcont, self.feeds[i].extra)){
                 self.highlights.push(self.feeds[i].id);
             }
         }
@@ -182,12 +182,12 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
 
     self.countFeedsContent = function(content) {
         var lcont = (""+content).toLowerCase();
-        console.log(lcont);
+        //console.log(lcont);
         let count = 0;
         for (var i = 0; i < self.feeds.length; i++) {
-            if (self.feeds[i].prettyText.toLowerCase().includes(lcont) ||
-                self.usersIdHash[self.feeds[i].author].fullname.toLowerCase().includes(lcont) ||
-                self.feeds[i].extra.toLowerCase().includes(lcont)){
+            if (isSubstring(lcont, self.feeds[i].prettyText) ||
+                isSubstring(lcont, self.usersIdHash[self.feeds[i].author].fullname) ||
+                isSubstring(lcont, self.feeds[i].extra)){
                 count++;
             }
         }
@@ -240,11 +240,11 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         });
     };
 
-    //var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
-    var socket = io("localhost:8502");
+    var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
+    //var socket = io("localhost:8502");
 
     socket.on("upd",function(data){
-	    console.log("SOCKET");
+	    //console.log("SOCKET");
         self.updateFeeds();
     });
 
@@ -352,7 +352,7 @@ app.controller("GraphController", function($scope){
 
     self.removeItem = function(){
         var feedsr = self.feeds.filter(function(e){return e.id!=self.detailBox.val;});
-        console.log(feedsr);
+        //console.log(feedsr);
         self.setFeeds(feedsr);
         self.detailBox.show = false;
     };
@@ -360,7 +360,7 @@ app.controller("GraphController", function($scope){
     self.appendCat = function(){
         var feedscat = self.rawfeeds.filter(function(e){return e.descr.toLowerCase().indexOf(self.detailBox.val)!=-1;});
         var feedsr = union(self.feeds,feedscat,self.rawfeeds,function(f){return f.id;});
-        console.log(feedsr);
+        //console.log(feedsr);
         self.setFeeds(feedsr);
         self.detailBox.show = false;
     };
@@ -665,7 +665,7 @@ app.controller("NewFeedController", function ($scope, $http){
     self.newFeed = {com: "", files: []};
 
     self.init = function(){
-        console.log(self.hashtags);
+        //console.log(self.hashtags);
         $("#new-feed-box").textcomplete([
             {
                 match: /\B#([\-+\w]*)$/,
@@ -877,7 +877,7 @@ app.controller("TwitterController",function($scope,$http,params){
             self.master.shared.secret = self.secret;
             self.waiting = true;
             $http({url: "twitter-feeds", method:"post", data:postdata}).success(function(data){
-                console.log(data);
+                //console.log(data);
                 self.master.rawfeeds = self.master.rawfeeds.concat(data);
                 self.master.restoreFeeds();
                 self.waiting = false;
@@ -894,7 +894,7 @@ app.controller("TwitterController",function($scope,$http,params){
             self.master.shared.secret = self.secret;
             self.waiting = true;
             $http({url: "twitter-user", method:"post", data:postdata}).success(function(data){
-                console.log(data);
+                //console.log(data);
                 self.master.rawfeeds = self.master.rawfeeds.concat(data);
                 self.master.restoreFeeds();
                 self.waiting = false;
@@ -907,7 +907,7 @@ app.controller("TwitterController",function($scope,$http,params){
 
     self.getTrends = function(){
         $http({url: "twitter-trends", method:"post"}).success(function(data) {
-            console.log(data);
+            //console.log(data);
             self.trends = data.sort(function(a,b){return a.popular- b.popular}).slice(0,15);
         });
     };
@@ -1063,4 +1063,11 @@ var getKeyWithPreffix = function(hshmap, preffix){
             return k;
     }
     return "";
+};
+
+var isSubstring = function(seq, original){
+    if(original != null && seq != null){
+        return original.toLowerCase().indexOf(seq.toLowerCase()) != -1;
+    }
+    return false;
 };
