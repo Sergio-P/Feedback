@@ -1,5 +1,8 @@
 var app = angular.module("Feedback",["ui.bootstrap"]);
 
+//var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
+var socket = io("localhost:8502");
+
 app.controller("FeedbackController",function($scope,$http,$uibModal){
     var self = $scope;
     self.shared = {};
@@ -247,9 +250,6 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
             self.sesinfo = data;
         });
     };
-
-    //var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
-    var socket = io("localhost:8502");
 
     socket.on("upd",function(data){
 	    //console.log("SOCKET");
@@ -1063,8 +1063,10 @@ app.controller("ChatController", function($scope, $http){
 
     let init = () => {
         self.updateChat();
+        socket.on("chat", (data) => {
+            self.updateChat();
+        });
     };
-
 
     self.updateChat = () => {
         $http.post("get-chat").success((data) => {
@@ -1082,7 +1084,6 @@ app.controller("ChatController", function($scope, $http){
             self.newMsg = "";
         });
     };
-
 
     init();
 

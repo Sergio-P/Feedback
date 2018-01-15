@@ -198,7 +198,11 @@ app.post("/send-chat-msg", rpg.execSQL({
     sql: "insert into chat(content,sesid,uid,ctime) values ($1,$2,$3,now())",
     sesReqData: ["ses", "uid"],
     postReqData: ["msg"],
-    sqlParams: [rpg.sqlParam("post", "msg"), rpg.sqlParam("ses","ses"), rpg.sqlParam("ses","uid")]
+    sqlParams: [rpg.sqlParam("post", "msg"), rpg.sqlParam("ses","ses"), rpg.sqlParam("ses","uid")],
+    onEnd: function(req,res){
+        socket.updChat();
+        res.send('{"status":"ok"}');
+    }
 }));
 
 
