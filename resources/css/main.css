@@ -275,3 +275,34 @@ a.map-btn {
     text-overflow: ellipsis;
 }
 
+.chat-container{
+    height: calc(100% - 84px);
+    overflow: auto;
+}
+
+.chat-header{
+    margin: 4px 0;
+    height: 18px;
+    display: block;
+}
+
+.chat-box{
+    border: 1px solid #999;
+    background: #fbfbfb;
+    border-radius: 8px;
+    padding: 4px 8px;
+    margin: 4px;
+}
+
+.chat-box strong{
+    display: block;
+}
+
+.chat-input{
+    height: 56px;
+}
+
+.chat-input textarea{
+    resize: none;
+    height: 100%;
+}

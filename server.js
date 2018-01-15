@@ -186,6 +186,22 @@ app.post("/get-ses-info", rpg.singleSQL({
     sqlParams: [rpg.sqlParam("ses","ses")]
 }));
 
+app.post("/get-chat", rpg.multiSQL({
+    dbcon: conString,
+    sql: "select c.id, c.content, c.ctime, u.fullname as author from chat as c, users as u where c.uid = u.id and c.sesid = $1 order by c.ctime",
+    sesReqData: ["ses"],
+    sqlParams: [rpg.sqlParam("ses","ses")]
+}));
+
+app.post("/send-chat-msg", rpg.execSQL({
+    dbcon: conString,
+    sql: "insert into chat(content,sesid,uid,ctime) values ($1,$2,$3,now())",
+    sesReqData: ["ses", "uid"],
+    postReqData: ["msg"],
+    sqlParams: [rpg.sqlParam("post", "msg"), rpg.sqlParam("ses","ses"), rpg.sqlParam("ses","uid")]
+}));
+
+
 function addSesUser(uid,ses){
     var sql = "insert into sesusers(sesid,uid) values ($1,$2)";
     var db = new pg.Client(conString);

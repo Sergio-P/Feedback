@@ -65,3 +65,15 @@ select 3,'twitterbot','Twitter Bot','#bot#','bot@tw'
 where not exists(
     select id from users where id = 3
 );
+
+
+create table if not exists chat (
+    id serial,
+    sesid integer not null,
+    uid integer not null,
+    content text,
+    ctime timestamp with time zone,
+    primary key(id),
+    foreign key(sesid) references sessions(id),
+    foreign key(uid) references users(id)
+);

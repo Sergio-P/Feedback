@@ -15,6 +15,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     self.hlist = [];
     self.twitterEnabled = false;
     self.historyOpened = false;
+    self.chatOpened = false;
 
     self.updateFeeds = function(){
         $http({url: "feed-list", method: "post"}).success(function(data){
@@ -103,7 +104,8 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
             feedf += feed.substring(k,part.from);
             if(part.prefix=="#") {
                 feedf += '<a class="green" ng-click="highlightHashtag(\'' + part.text + '\'); $event.stopPropagation();">';
-                self.addToTagMap(part.text,id);
+                if(id!=null)
+                    self.addToTagMap(part.text,id);
             }
             else
                 feedf += '<a class="green">';
@@ -113,6 +115,8 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         feedf += feed.substring(k);
         return linkifyHtml(feedf,{linkClass: "green"});
     };
+
+    self.shared.prettyPrintFeed = self.prettyPrintFeed;
 
     self.addToTagMap = function(tag, fid){
         if(tag in self.tagMap && ! self.tagMap[tag].includes(fid)){
@@ -234,14 +238,18 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         });
     };
 
+    self.openDisChat = () => {
+        self.chatOpened = !self.chatOpened;
+    };
+
     self.getSesInfo = function(){
         $http.post("get-ses-info").success((data) => {
             self.sesinfo = data;
         });
     };
 
-    var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
-    //var socket = io("localhost:8502");
+    //var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
+    var socket = io("localhost:8502");
 
     socket.on("upd",function(data){
 	    //console.log("SOCKET");
@@ -1045,6 +1053,39 @@ app.controller("HistoryListController",function($scope,$http){
     };
 
     self.createItems();
+});
+
+app.controller("ChatController", function($scope, $http){
+    let self = $scope;
+
+    self.chatMsgs = [];
+    self.newMsg = "";
+
+    let init = () => {
+        self.updateChat();
+    };
+
+
+    self.updateChat = () => {
+        $http.post("get-chat").success((data) => {
+            self.chatMsgs = data.map(e => {
+                e.prettyContent = self.shared.prettyPrintFeed(e.content, null);
+                return e;
+            });
+        });
+    };
+
+    self.sendChatMsg = () => {
+        if(self.newMsg == null || self.newMsg === "") return;
+        $http.post("send-chat-msg", {msg: self.newMsg}).success((data) => {
+            self.updateChat();
+            self.newMsg = "";
+        });
+    };
+
+
+    init();
+
 });
 
 // Static utils functions
