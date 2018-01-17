@@ -284,6 +284,7 @@ a.map-btn {
     margin: 4px 0;
     height: 18px;
     display: block;
+    font-size: 110%;
 }
 
 .chat-box{
@@ -305,4 +306,8 @@ a.map-btn {
 .chat-input textarea{
     resize: none;
     height: 100%;
+}
+
+.padding-0{
+    padding: 0;
 }

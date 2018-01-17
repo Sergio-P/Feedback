@@ -1,7 +1,7 @@
 var app = angular.module("Feedback",["ui.bootstrap"]);
 
-//var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
-var socket = io("localhost:8502");
+var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
+//var socket = io("localhost:8502");
 
 app.controller("FeedbackController",function($scope,$http,$uibModal){
     var self = $scope;
