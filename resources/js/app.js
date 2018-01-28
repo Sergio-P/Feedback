@@ -94,6 +94,11 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
                 var l = wl.length;
                 parts.push({prefix: "#", text: wl.substring(0,l), orgnText: word.substring(0,l), from: at, to: at + l});
             }
+            else if (word[0] == "%" && word[1]=="M") {
+                at = text.indexOf(word);
+                var l = wl.length + 1;
+                parts.push({prefix: "%", text: wl.substring(1,l-1), orgnText: word.substring(0,l), from: at, to: at + l});
+            }
         }
         return parts;
     };
@@ -109,6 +114,9 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
                 feedf += '<a class="green" ng-click="highlightHashtag(\'' + part.text + '\'); $event.stopPropagation();">';
                 if(id!=null)
                     self.addToTagMap(part.text,id);
+            }
+            else if(part.prefix=="%"){
+                feedf += '<a class="green" ng-click="highlightUnique(' + part.text + ')">';
             }
             else
                 feedf += '<a class="green">';
@@ -1083,6 +1091,10 @@ app.controller("ChatController", function($scope, $http){
             self.updateChat();
             self.newMsg = "";
         });
+    };
+
+    self.shared.referenceMsg = (id) => {
+        self.newMsg += " %M"+id+" ";
     };
 
     init();
