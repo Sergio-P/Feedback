@@ -191,7 +191,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         self.shared.highlightMarkers();
         setTimeout(function(){
             let c = $(".feed-box.highlight:first")[0];
-            if(c!=null) c.scrollIntoView();
+            // if(c!=null) c.scrollIntoView();
         },100);
     };
 
@@ -219,7 +219,9 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
                         loc: (defloc==null)?self.shared.newMarker:defloc,
                         master: self,
                         deftext: deftxt,
-                        deftype: deftype
+                        deftype: deftype,
+                        hashtags: self.hashtags,
+                        users: self.users
                     }
                 }
             }
@@ -896,6 +898,45 @@ app.controller("AdvancedSearchController", function ($scope, $http){
 
 app.controller("TwitterController",function($scope,$http,params){
     var self = $scope;
+
+    $("#twitter-modal-query").textcomplete([
+        {
+            match: /\B#([\-+\w]*)$/,
+            search: function (term, callback) {
+                callback($.map(getSortedKeys(params.hashtags), function (cat) {
+                    return cat.indexOf(term) === 0 ? cat : null;
+                }));
+            },
+            template: function (value) {
+                return "#"+value+" ";
+            },
+            replace: function (value) {
+                return '#'+value+" ";
+            },
+            index: 1
+        },
+        {
+            match: /\B@([\-+\w]*)$/,
+            search: function (term, callback) {
+                callback($.map(params.users, function (u) {
+                    return u.username.indexOf(term) === 0 ? u.username : null;
+                }));
+            },
+            template: function (value) {
+                return "@"+value+" ";
+            },
+            replace: function (value) {
+                return '@'+value+" ";
+            },
+            index: 1
+        }
+    ], {
+        onKeydown: function (e, commands){
+            if (e.ctrlKey && e.keyCode === 74) {
+                return commands.KEY_ENTER;
+            }
+        }
+    });
 
     self.master = params.master;
     if(params.deftext!=null)
