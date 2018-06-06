@@ -554,6 +554,9 @@ app.controller("MapController",function($scope){
                 limits.extend(self.fuzzyMarkers[wkt].position);
         }
         self.map.fitBounds(limits);
+        if(self.map.getZoom() > 18){
+            self.map.setZoom(18);
+        }
     };
 
     self.shared.getMapBounds = function(){
@@ -603,6 +606,9 @@ app.controller("MapController",function($scope){
         }
         //console.log(limits);
         self.map.fitBounds(limits);
+        if(self.map.getZoom() > 18){
+            self.map.setZoom(18);
+        }
     };
 
     self.createLocationButton = () => {
