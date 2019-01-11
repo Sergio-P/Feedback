@@ -311,3 +311,11 @@ a.map-btn {
 .padding-0{
     padding: 0;
 }
+
+.resizable-hor{
+    resize: horizontal;
+}
+
+.resizable-ver{
+    resize: vertical;
+}

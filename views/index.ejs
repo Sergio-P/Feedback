@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/main.css"/>
     <link rel="shortcut icon" href="gpx/favicon.ico" type="image/x-icon">
     <script src="libs/jquery.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAx05l8YIv_oB8f5AMBGIcWmgnqFou0VJI&libraries=drawing,geometry,places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAx05l8YIv_oB8f5AMBGIcWmgnqFou0VJI&libraries=drawing,geometry,places&key=AIzaSyBimhjG_0l8cAvTHvMZHBK9KApFPGlLqwo"></script>
     <script src="libs/vis.min.js"></script>
     <script src="libs/jquery.textcomplete.min.js"></script>
     <script src="libs/linkify.min.js"></script>
@@ -60,7 +60,7 @@
     </div>
 
     <div class="row abs-full-height">
-        <div class="col-sm-2 full-height scrollable no-padding-right simple-padding-left" ng-show="historyOpened">
+        <div class="col-sm-2 full-height scrollable no-padding-right simple-padding-left resizable-ver" ng-show="historyOpened">
             <h4><i class="fa fa-clock-o"></i> Search History</h4>
             <div ng-controller="HistoryListController">
                 <ul class="list-group">
@@ -76,7 +76,7 @@
                 </ul>
             </div>
         </div>
-        <div class="full-height scrollable no-padding-right" ng-class="{'col-sm-3':historyOpened && !chatOpened || !historyOpened && chatOpened,
+        <div class="full-height scrollable no-padding-right resizable-hor" ng-class="{'col-sm-3':historyOpened && !chatOpened || !historyOpened && chatOpened,
                     'col-sm-4':!historyOpened && !chatOpened, 'col-sm-2': historyOpened && chatOpened}">
             <div class="simple-padding" ng-controller="NewFeedController">
                 <span class="label label-primary over-right" ng-class="{'label-danger':newFeed.com.length>140}">{{newFeed.com.length}}</span>
@@ -108,14 +108,14 @@
         </div>
         <div class="full-height" ng-class="{'col-sm-7':historyOpened && !chatOpened || !historyOpened && chatOpened,
             'col-sm-8':!historyOpened && !chatOpened, 'col-sm-6': historyOpened && chatOpened}">
-            <div class="mid-height" ng-controller="MapController">
+            <div class="mid-height resizable-ver" ng-controller="MapController">
                 <div id="map"></div>
                 <a class="map-btn absolute-right" ng-click="setMapDrawingMode(true)">
                     <i class="fa fa-close"></i>
                 </a>
                 <input type="text" id="pac-input">
             </div>
-            <div class="mid-height" ng-controller="GraphController">
+            <div class="mid-height resizable-ver" ng-controller="GraphController">
                 <div id="graph"></div>
                 <div class="graph-ov-btn graph-descr" ng-show="detailBox.show">
                     <a class="btn btn-white btn-xs" ng-show="detailBox.expandible" ng-click="appendCat()"><i class="fa fa-expand"></i></a>
@@ -131,7 +131,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-2 full-height scrollable padding-0" ng-show="chatOpened" ng-controller="ChatController">
+        <div class="col-sm-2 full-height scrollable padding-0 resizable-hor" ng-show="chatOpened" ng-controller="ChatController">
             <h4 class="chat-header"><i class="fa fa-comments"></i> Discussion Chat</h4>
             <div class="chat-container">
                 <div class="chat-box" ng-repeat="chat in chatMsgs">
