@@ -7,6 +7,7 @@ var rpg = require("./rest-pg.js");
 var bb = require('express-busboy');
 var twAdpt = require("./twitterAdapter.js");
 var socket = require("./socket-config.js");
+let mailer = require("nodemailer");
 
 var app = module.exports = express();
 var conString = require("./passwords.js")("conString");
@@ -19,6 +20,11 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.use(session({secret: 'ssshhh', saveUninitialized: false, resave: false}));
 
+
+let mailserv = mailer.createTransport({
+    sendmail: true,
+    newline: 'unix'
+});
 
 app.get("/",function(req,res){
     if(req.session.uid){
@@ -40,7 +46,7 @@ app.get("/seslist",function(req,res){
 });
 
 app.get("/login",function(req,res){
-     res.render("login");
+     res.render("login", {rc: req.query.rc});
 });
 
 app.get("/logout",function(req,res){
@@ -70,8 +76,11 @@ app.post("/login", function(req,res){
     qry.on("end",function(){
         if(id!=-1) {
             req.session.uid = id;
+            res.redirect(".");
         }
-        res.redirect(".");
+        else{
+            res.redirect("login?rc=2");
+        }
     });
 });
 
@@ -87,7 +96,51 @@ app.post("/register", rpg.execSQL({
     sqlParams: [rpg.sqlParam("post","user"),rpg.sqlParam("calc","passcr"),rpg.sqlParam("calc","fullname"),
         rpg.sqlParam("post","mail"),rpg.sqlParam("post","sex")],
     onEnd: function(req,res){
-        res.redirect(".");
+        res.redirect("login?rc=1");
+    }
+}));
+
+app.post("/resetpassword", rpg.execSQL({
+    dbcon: conString,
+    sql: "insert into pass_reset(mail, token, ctime) values ($1,$2,now())",
+    postReqData: ["mail"],
+    onStart: (ses, data, calc) => {
+        let n = ~~(Math.random()*32768);
+        calc.token = "" + n + crypto.createHash('md5').update(data.user).digest('hex');
+        let mailopts = {
+            from: "noreply@saduewa.dcc.uchile.cl",
+            to: data.user,
+            subject: "Feedback Password Reset",
+            text: "You can reset your password by clicking the link below \n " +
+                "https://saduewa.dcc.uchile.cl:8888/feedback/new-pass/" + calc.token + "\n\nFeedback."
+        };
+        mailserv.sendMail(mailopts, function(err,info){
+            if(!err){
+                console.log("Mail sent");
+            }
+        });
+    },
+    sqlParams: [rpg.sqlParam("post", "user"), rpg.sqlParam("calc", "token")],
+    onEnd: (req, res) => {
+        res.redirect("login?rc=3");
+    }
+}));
+
+app.get("/new-pass/:token", (req, res) => {
+    res.render("newpass", {token: req.params.token});
+});
+
+app.post("/newpassword", rpg.execSQL({
+    dbcon: conString,
+    sql: "update users as u set pass = $1 from pass_reset as r where r.token = $2 and r.mail = u.mail",
+    postReqData: ["token", "pass"],
+    onStart: (ses, data, calc) => {
+        if (data.pass.length < 5) return "select 1";
+        calc.passcr = crypto.createHash('md5').update(data.pass).digest('hex');
+    },
+    sqlParams: [rpg.sqlParam("calc", "passcr"), rpg.sqlParam("post", "token")],
+    onEnd: (req, res) => {
+        res.redirect("login?rc=4");
     }
 }));
 

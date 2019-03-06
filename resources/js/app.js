@@ -190,8 +190,8 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         self.shared.highlightNodes();
         self.shared.highlightMarkers();
         setTimeout(function(){
-            let c = $(".feed-box.highlight:first")[0];
-            // if(c!=null) c.scrollIntoView();
+            let c = $(".feed-box.highlight");
+            if(c.length > 1) c[0].scrollIntoView();
         },100);
     };
 
@@ -977,7 +977,7 @@ app.controller("TwitterController",function($scope,$http,params){
             self.master.shared.secret = self.secret;
             self.waiting = true;
             $http({url: "twitter-feeds", method:"post", data:postdata}).success(function(data){
-                //console.log(data);
+                alert("Found " + data.length + " twitter messages");
                 self.master.rawfeeds = self.master.rawfeeds.concat(data);
                 self.master.restoreFeeds();
                 self.waiting = false;

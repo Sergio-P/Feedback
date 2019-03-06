@@ -70,6 +70,7 @@ hr{
 
 .mid-height{
     height: 50%;
+    border-bottom: 1px solid #333;
 }
 
 .bordered{

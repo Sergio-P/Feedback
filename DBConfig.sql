@@ -77,3 +77,12 @@ create table if not exists chat (
     foreign key(sesid) references sessions(id),
     foreign key(uid) references users(id)
 );
+
+
+create table if not exists pass_reset(
+    id serial,
+    mail varchar(32) not null,
+    token varchar(64) not null,
+    ctime timestamp,
+    primary key(id)
+);
