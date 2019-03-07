@@ -689,28 +689,22 @@ app.controller("MapController",function($scope){
         let markers = [];
         searchBox.addListener('places_changed', function() {
             let places = searchBox.getPlaces();
-            if (places.length == 0) return;
-
-            self.map.panTo(places[0].geometry.location);
-            /*markers.forEach(function(marker) {
+            markers.forEach(function(marker) {
                 marker.setMap(null);
             });
             markers = [];
+            if (places.length == 0){
+                return;
+            }
 
-            var bounds = new google.maps.LatLngBounds();
+            self.map.panTo(places[0].geometry.location);
             places.forEach(function(place) {
                 markers.push(new google.maps.Marker({
                     map: self.map,
                     title: place.name,
                     position: place.geometry.location
                 }));
-                if(place.geometry.viewport){
-                    bounds.union(place.geometry.viewport);
-                }
-                else {
-                    bounds.extend(place.geometry.location);
-                }
-            });*/
+            });
             //self.map.fitBounds(bounds);
         });
     };
