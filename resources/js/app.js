@@ -691,7 +691,8 @@ app.controller("MapController",function($scope){
             let places = searchBox.getPlaces();
             if (places.length == 0) return;
 
-            markers.forEach(function(marker) {
+            self.map.panTo(places[0].geometry.location);
+            /*markers.forEach(function(marker) {
                 marker.setMap(null);
             });
             markers = [];
@@ -709,7 +710,7 @@ app.controller("MapController",function($scope){
                 else {
                     bounds.extend(place.geometry.location);
                 }
-            });
+            });*/
             //self.map.fitBounds(bounds);
         });
     };
