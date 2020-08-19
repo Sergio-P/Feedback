@@ -3,15 +3,16 @@
   "author": "Sergio Peñafiel",
   "version": "0.6.1",
   "dependencies": {
-    "ejs": "*",
-    "express": "*",
-    "express-session": "*",
-    "express-busboy": "*",
-    "pg": "*",
-    "twit": "*",
-    "socket.io": "*"
+    "ejs": "2.5.2",
+    "express": "4.14.0",
+    "express-busboy": "4.0.0",
+    "express-session": "1.14.2",
+    "node-mailer": "^0.1.1",
+    "pg": "6.1.0",
+    "socket.io": "1.5.1",
+    "twit": "2.2.5"
   },
-  "scripts":{
+  "scripts": {
     "start": "node server.js"
   },
   "license": "MIT"

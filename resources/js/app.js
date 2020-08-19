@@ -19,6 +19,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
     self.twitterEnabled = false;
     self.historyOpened = false;
     self.chatOpened = false;
+    self.graphOpened = false;
 
     self.updateFeeds = function(){
         $http({url: "feed-list", method: "post"}).success(function(data){
@@ -253,6 +254,10 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
 
     self.openDisChat = () => {
         self.chatOpened = !self.chatOpened;
+    };
+
+    self.openGraph = () => {
+        self.graphOpened = !self.graphOpened;
     };
 
     self.getSesInfo = function(){
