@@ -178,7 +178,7 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
 
     self.highlightUnique = function(fid){
         self.highlights = [fid];
-        self.propagateHighlight();
+        self.propagateHighlight(true);
     };
 
     self.setHighlights = function(arr){
@@ -186,12 +186,12 @@ app.controller("FeedbackController",function($scope,$http,$uibModal){
         self.propagateHighlight();
     };
 
-    self.propagateHighlight = function(){
+    self.propagateHighlight = function(notp){
         self.shared.highlightNodes();
         self.shared.highlightMarkers();
         setTimeout(function(){
             let c = $(".feed-box.highlight");
-            if(c.length > 1) c[0].scrollIntoView();
+            if(c.length > 0) c[0].scrollIntoView();
         },100);
     };
 
