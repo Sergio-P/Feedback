@@ -1,6 +1,6 @@
 var app = angular.module("Feedback",["ui.bootstrap"]);
 
-var socket = io("saduewa.dcc.uchile.cl:8888/Feedback");
+var socket = io(window.location.hostname);
 //var socket = io("localhost:8502");
 
 app.controller("FeedbackController",function($scope,$http,$uibModal){
@@ -609,10 +609,15 @@ app.controller("MapController",function($scope){
             if(p != null && !isNaN(p.lat()) && !isNaN(p.lng()))
                 limits.extend(p);
         }
-        //console.log(limits);
-        self.map.fitBounds(limits);
-        if(self.map.getZoom() > 18){
-            self.map.setZoom(18);
+
+        if(limits.isEmpty()){
+            self.map.setZoom(1);
+        }
+        else{
+            self.map.fitBounds(limits);
+            if(self.map.getZoom() > 18){
+                self.map.setZoom(18);
+            }
         }
     };
 
